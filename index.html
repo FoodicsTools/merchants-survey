@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Foodics Market Insights Survey</title>
+<meta name="description" content="A five-minute survey on F&B trends, challenges and technology in the region.">
+<meta name="theme-color" content="#440099">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one question per screen on a Foodics-purple field. Fixed top progress, quiet header, thumb-reach dock at the bottom. */
+:root{
+  --brand:#440099;
+  --brand-deep:#2a0066;
+  --brand-glow:#5830c5;
+  --lav:#cdb8ff;
+  --paper:#ffffff;
+  --glass:rgba(255,255,255,.10);
+  --glass-hover:rgba(255,255,255,.18);
+  --line:rgba(255,255,255,.26);
+  --font-latin:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-ar:"IBM Plex Sans Arabic","IBM Plex Sans",system-ui,"Segoe UI",Tahoma,Arial,sans-serif;
+  --gutter:clamp(16px,4vw,40px);
+  --ease:cubic-bezier(.22,.8,.24,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{
+  margin:0;background:var(--brand-deep);color:var(--paper);
+  font-family:var(--font-latin);font-size:17px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;
+}
+html[lang="ar"] body{font-family:var(--font-ar)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:12px}
+
+/* Background */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;
+  background:
+    radial-gradient(1100px 700px at 10% -10%,var(--brand-glow) 0%,transparent 62%),
+    radial-gradient(900px 640px at 108% 108%,#6a2de0 0%,transparent 58%),
+    linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.32;animation:drift 24s ease-in-out infinite alternate}
+.b1{width:46vmax;height:46vmax;background:#7b4dff;top:-18vmax;inset-inline-end:-12vmax}
+.b2{width:40vmax;height:40vmax;background:#3b0aa8;bottom:-16vmax;inset-inline-start:-10vmax;animation-duration:30s}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-4vmax,5vmax,0) scale(1.12)}}
+
+/* Progress + header */
+.progress{position:fixed;top:0;inset-inline:0;height:4px;background:rgba(255,255,255,.14);z-index:30;display:flex}
+#bar{height:100%;width:0;background:#fff;border-radius:0 4px 4px 0;transition:width .6s var(--ease)}
+[dir="rtl"] #bar{border-radius:4px 0 0 4px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(20px + env(safe-area-inset-top,0px)) var(--gutter) 8px;position:relative;z-index:5}
+.logo{display:flex;align-items:center;min-height:32px;text-decoration:none;color:#fff}
+.logo img{height:26px;width:auto;filter:brightness(0) invert(1)}
+.wordmark{font-weight:700;letter-spacing:.22em;font-size:20px;font-family:var(--font-latin)}
+.tools{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--lav)}
+.lang{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:600;font-size:14px;transition:background .2s}
+.lang:hover{background:var(--glass-hover)}
+
+/* Stage */
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:12px var(--gutter) 150px}
+.screen{width:100%;max-width:760px}
+.anim-fwd{animation:inFwd .42s var(--ease) both}
+.anim-back{animation:inBack .42s var(--ease) both}
+.anim-none{animation:none}
+@keyframes inFwd{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes inBack{from{opacity:0;transform:translateY(-22px)}to{opacity:1;transform:none}}
+
+.meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--lav)}
+html[lang="ar"] .chip{letter-spacing:0;text-transform:none;font-size:14px}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lav)}
+.chip.flash{animation:flash 1.4s var(--ease)}
+@keyframes flash{0%{transform:translateX(-10px);opacity:0}30%{opacity:1}100%{transform:none}}
+[dir="rtl"] .chip.flash{animation-name:flashR}
+@keyframes flashR{0%{transform:translateX(10px);opacity:0}30%{opacity:1}100%{transform:none}}
+.count{font-size:14px;color:var(--lav);font-variant-numeric:tabular-nums}
+
+h1.q{margin:0 0 10px;font-size:clamp(26px,4.4vw,42px);line-height:1.14;font-weight:600;letter-spacing:-.012em;text-wrap:balance;outline:none}
+html[lang="ar"] h1.q{line-height:1.4;letter-spacing:0}
+.hint{margin:0 0 26px;color:var(--lav);font-size:17px}
+.req-dot{display:inline-block;margin-inline-start:8px;font-size:13px;font-weight:600;color:var(--lav);vertical-align:middle;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
+.q+.opts,.q+.scale,.q+.inp,.q+.irs,.q+.cf{margin-top:26px}
+
+/* Options */
+.opts{display:grid;gap:10px}
+.opts.cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:640px){.opts.cols{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:14px;width:100%;min-width:0;text-align:start;padding:15px 18px;border-radius:14px;
+  border:1.5px solid var(--line);background:var(--glass);cursor:pointer;font-weight:500;line-height:1.3;
+  transition:background .18s,border-color .18s,color .18s,transform .18s var(--ease)}
+.opt:hover{background:var(--glass-hover);transform:translateY(-1px)}
+.opt:active{transform:scale(.99)}
+.opt .key{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);font-size:13px;font-weight:600;color:var(--lav);transition:all .18s}
+@media (hover:none){.opt .key{display:none}}
+.opt .lbl{flex:1;min-width:0;overflow-wrap:anywhere}
+.opt small{display:block;margin-top:2px;font-size:13.5px;font-weight:400;opacity:.78}
+.opt .tick{flex:none;width:22px;height:22px;opacity:0;transform:scale(.5);transition:all .22s var(--ease)}
+.opt[aria-checked="true"]{background:#fff;border-color:#fff;color:var(--brand)}
+.opt[aria-checked="true"] .key{background:var(--brand);border-color:var(--brand);color:#fff}
+.opt[aria-checked="true"] .tick{opacity:1;transform:none}
+.opt.shake{animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+
+/* Scales */
+.scale{display:grid;gap:8px}
+.sc{display:grid;place-items:center;aspect-ratio:1;min-height:52px;border-radius:14px;border:1.5px solid var(--line);background:var(--glass);cursor:pointer;
+  font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;transition:background .18s,transform .18s var(--ease),color .18s}
+.sc:hover{background:var(--glass-hover);transform:translateY(-2px)}
+.sc[aria-checked="true"]{background:#fff;color:var(--brand);border-color:#fff;transform:translateY(-2px)}
+.scale.n10{grid-template-columns:repeat(10,minmax(0,1fr))}
+.scale.n5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:560px){.scale.n10{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.sc.lab{aspect-ratio:auto;padding:14px 4px 12px;gap:6px;align-content:start}
+.sc.lab span{font-size:12.5px;font-weight:500;line-height:1.2;text-align:center;opacity:.9}
+.ends{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:14px;color:var(--lav)}
+
+/* Inputs */
+.inp{width:100%;padding:15px 18px;border-radius:14px;border:1.5px solid var(--line);background:rgba(255,255,255,.08);color:#fff;transition:border-color .18s,background .18s;resize:vertical}
+.inp::placeholder{color:rgba(255,255,255,.55)}
+.inp:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.15)}
+.inp.other{margin-top:10px;animation:inFwd .3s var(--ease) both}
+textarea.inp{min-height:130px}
+.cf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.cf{grid-template-columns:1fr}}
+.cf label{display:grid;gap:6px;font-size:14px;color:var(--lav);font-weight:500}
+.cf .wide{grid-column:1/-1}
+.pot{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.sub-h{margin:26px 0 12px;font-size:14px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--lav)}
+html[lang="ar"] .sub-h{letter-spacing:0;text-transform:none;font-size:15px}
+.err{margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(255,120,120,.16);border:1px solid rgba(255,150,150,.5);font-size:15px}
+
+/* Per-product reasons */
+.irs{display:grid;gap:10px}
+.ir{display:grid;gap:8px}
+.reasons{display:flex;flex-wrap:wrap;gap:8px;padding-inline-start:14px;animation:inFwd .3s var(--ease) both}
+.rs{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:8px 15px;font-size:15px;font-weight:500;cursor:pointer;transition:all .18s}
+.rs:hover{background:var(--glass-hover)}
+.rs[aria-checked="true"]{background:var(--lav);color:var(--brand-deep);border-color:var(--lav)}
+
+/* Dock */
+.dock{position:fixed;bottom:0;inset-inline:0;z-index:20;padding:34px var(--gutter) calc(16px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(to top,rgba(36,0,88,.96) 52%,rgba(36,0,88,0))}
+.dock-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.dock-hint{flex:1;text-align:center;font-size:14px;color:var(--lav);min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 28px;border-radius:12px;border:0;background:#fff;color:var(--brand);
+  font-weight:600;cursor:pointer;transition:transform .18s var(--ease),opacity .2s,box-shadow .2s;box-shadow:0 8px 24px rgba(20,0,60,.35)}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{background:transparent;color:#fff;border:1.5px solid var(--line);box-shadow:none}
+.btn.ghost:hover{background:var(--glass-hover)}
+.btn.round{width:50px;height:50px;padding:0;border-radius:50%;flex:none}
+.btn.wide{width:100%}
+.ico{width:20px;height:20px;flex:none}
+[dir="rtl"] .ico.flip{transform:scaleX(-1)}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(68,0,153,.25);border-top-color:var(--brand);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Intro / end screens */
+.hero h1{margin:14px 0 18px;font-size:clamp(34px,6.4vw,62px);line-height:1.04;font-weight:700;letter-spacing:-.025em;text-wrap:balance}
+html[lang="ar"] .hero h1{line-height:1.3;letter-spacing:0}
+.hero .lead{font-size:clamp(18px,2.4vw,21px);color:#efe7ff;max-width:36em;margin:0 0 14px}
+.hero .about{font-size:15.5px;color:var(--lav);max-width:42em;margin:0 0 22px}
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 28px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:14.5px;font-weight:500}
+.pill svg{width:16px;height:16px}
+.card{background:rgba(255,255,255,.1);border:1.5px solid var(--line);border-radius:18px;padding:22px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.card h2{margin:0 0 6px;font-size:15px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--lav)}
+html[lang="ar"] .card h2{letter-spacing:0;text-transform:none;font-size:16px}
+.card p{margin:0 0 18px}
+.stack{display:grid;gap:10px}
+.note{margin:18px 0 0;font-size:14.5px;color:var(--lav)}
+.done{text-align:center}
+.done .ring{width:104px;height:104px;margin:0 auto 22px}
+.ring circle{fill:none;stroke:#fff;stroke-width:4;stroke-dasharray:302;stroke-dashoffset:302;animation:draw .9s .1s var(--ease) forwards;transform-origin:center;transform:rotate(-90deg)}
+.ring path{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:draw2 .5s .8s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes draw2{to{stroke-dashoffset:0}}
+.done h1{margin:0 0 10px;font-size:clamp(34px,6vw,52px);font-weight:700}
+.done p{margin:0 auto 12px;max-width:30em;color:#efe7ff;font-size:19px}
+.done .btn{margin-top:14px}
+details.dbg{margin-top:26px;text-align:start;font-size:13px;color:var(--lav)}
+details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);padding:14px;border-radius:12px;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word}
+
+/* Toast */
+.toast{position:fixed;top:calc(74px + env(safe-area-inset-top,0px));inset-inline:0;margin-inline:auto;width:max-content;max-width:calc(100vw - 32px);z-index:40;
+  background:#fff;color:var(--brand);padding:10px 20px;border-radius:999px;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(20,0,60,.4);
+  animation:toast 2.4s var(--ease) both;pointer-events:none}
+@keyframes toast{0%{opacity:0;transform:translateY(-14px)}12%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+
+@media (max-width:560px){
+  body{font-size:16px}
+  .opt{padding:14px 15px}
+  .btn{padding:14px 22px}
+  .tools .tl{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i></div>
+<div class="progress" aria-hidden="true"><div id="bar"></div></div>
+
+<header class="top">
+  <a class="logo" href="#" aria-label="Foodics">
+    <img src="assets/foodics-logo.svg" alt="Foodics" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+    <span class="wordmark" hidden>FOODICS</span>
+  </a>
+  <div class="tools">
+    <span class="tl" id="timeLeft" aria-live="polite"></span>
+    <button type="button" class="lang" id="langBtn">عربي</button>
+  </div>
+</header>
+
+<main>
+  <section class="screen" id="screen" aria-live="polite"></section>
+  <noscript><p>This survey needs JavaScript to run.</p></noscript>
+</main>
+
+<footer class="dock" id="dock" hidden>
+  <div class="dock-in">
+    <button type="button" class="btn ghost round" id="backBtn" aria-label="Back"><svg class="ico flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="dock-hint" id="dockHint"></div>
+    <button type="button" class="btn" id="nextBtn"></button>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- Configuration ---------- */
+var CFG = Object.assign({SUPABASE_URL:'',SUPABASE_ANON_KEY:'',TABLE:'responses'}, window.SURVEY_CONFIG||{});
+var CONFIGURED = /^https:\/\/[^\s]+\.supabase\.co/i.test(CFG.SUPABASE_URL) && String(CFG.SUPABASE_ANON_KEY).length > 20;
+var STORE_KEY = 'foodics_mi_survey_v1';
+var VERSION = 'v1';
+
+/* ---------- Helpers ---------- */
+var $ = function(s){return document.querySelector(s)};
+var esc = function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var O = function(v,en,ar,x){return Object.assign({v:v,l:{en:en,ar:ar}},x||{})};
+var ICON_TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+var ICON_ARROW = '<svg class="ico flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M15 5l-7 7 7 7"/></svg>';
+
+/* ---------- UI strings ---------- */
+var UI = {
+ en:{
+  langBtn:'عربي',
+  introTitle:'Help shape the future of F&B in the region',
+  introSub:'Five minutes of quick taps. Your answers feed a public Market Insights Report on trends, challenges and technology.',
+  about:'Foodics is a SaaS and fintech company that helps restaurants, cafés and shops run everything from orders to payments to inventory on one cloud platform.',
+  pill1:'About 5 minutes', pill2:'Shown in aggregate only', pill3:'Go back any time',
+  consentTitle:'Before we start',
+  consentText:'I agree that my answers will be stored and analysed for business purposes, and published only in aggregate.',
+  agree:'I agree, start', disagree:"I don't agree",
+  interview:'Want to talk more? You can accept an interview invitation on the last screen.',
+  resume:'Continue where I left off',
+  declinedTitle:'No problem', declinedText:'Nothing was saved. You can start again whenever you like.', startOver:'Start again',
+  back:'Back', next:'Next', skip:'Skip', submit:'Submit', sending:'Sending',
+  required:'Required', selected:'{x} of {n} selected', pickUp:'Choose up to {n}',
+  other:'Please specify', typeHere:'Type your answer',
+  minLeft:'About {n} min left', lessMin:'Less than a minute left',
+  halfway:'Halfway there', lastStep:'Last step',
+  pickReason:'Choose a reason for each product',
+  contactNeed:'Add an email or phone so we can reach you', emailBad:'Please check the email address',
+  sendFail:"We couldn't send your answers. Check your connection and try again. Your answers are still here.",
+  thanks:'Thank you!', thanksText:'Your answers are in. They will help shape the Market Insights Report and what Foodics builds next.',
+  thanksReport:"We'll send you the report when it's published.", share:'Know another business owner? Copy the survey link', copied:'Link copied',
+  previewNote:'Preview mode: answers are not saved. Add your Supabase keys in config.js to start collecting responses.', previewData:'What would have been sent',
+  noteOpt:'Anything you would like to add? (optional)',
+  sec:{s1:'About you', s2c:'Your experience with Foodics', s2n:'Your tools and needs', s3:'Challenges and needs', s4:'Market pulse', s5:'Stay in touch'}
+ },
+ ar:{
+  langBtn:'English',
+  introTitle:'ساهم في رسم مستقبل قطاع المطاعم والمقاهي في المنطقة',
+  introSub:'خمس دقائق من النقرات السريعة. إجاباتك تُبنى عليها دراسة رؤى السوق التي سننشرها حول الاتجاهات والتحديات والتقنية.',
+  about:'فودكس شركة برمجيات سحابية وتقنية مالية، تساعد المطاعم والمقاهي والمتاجر على إدارة كل شيء، من الطلبات والمدفوعات إلى المخزون، في منصة واحدة.',
+  pill1:'نحو 5 دقائق', pill2:'تُعرض النتائج مجمَّعة فقط', pill3:'يمكنك الرجوع في أي وقت',
+  consentTitle:'قبل أن نبدأ',
+  consentText:'أوافق على تخزين إجاباتي وتحليلها لأغراض العمل، ونشرها بشكل مجمَّع فقط.',
+  agree:'أوافق، لنبدأ', disagree:'لا أوافق',
+  interview:'هل تود مواصلة الحوار؟ يمكنك قبول دعوة لمقابلة في الشاشة الأخيرة.',
+  resume:'أكمل من حيث توقفت',
+  declinedTitle:'لا مشكلة', declinedText:'لم يتم حفظ أي شيء. يمكنك البدء من جديد متى شئت.', startOver:'ابدأ من جديد',
+  back:'رجوع', next:'التالي', skip:'تخطَّ', submit:'إرسال', sending:'جارٍ الإرسال',
+  required:'مطلوب', selected:'تم اختيار {x} من {n}', pickUp:'اختر حتى {n}',
+  other:'يرجى التحديد', typeHere:'اكتب إجابتك',
+  minLeft:'متبقٍ نحو {n} دقيقة', lessMin:'متبقٍ أقل من دقيقة',
+  halfway:'وصلنا إلى منتصف الطريق', lastStep:'الخطوة الأخيرة',
+  pickReason:'اختر سبباً لكل منتج',
+  contactNeed:'أضف بريداً إلكترونياً أو رقم جوال لنتمكن من التواصل معك', emailBad:'يرجى التحقق من البريد الإلكتروني',
+  sendFail:'تعذّر إرسال إجاباتك. تحقق من الاتصال وحاول مرة أخرى. إجاباتك محفوظة هنا.',
+  thanks:'شكراً لك!', thanksText:'وصلت إجاباتك. ستساهم في دراسة رؤى السوق وفي ما ستبنيه فودكس لاحقاً.',
+  thanksReport:'سنرسل لك التقرير فور نشره.', share:'تعرف صاحب نشاط آخر؟ انسخ رابط الاستطلاع', copied:'تم نسخ الرابط',
+  previewNote:'Preview mode: answers are not saved. Add your Supabase keys in config.js to start collecting responses.', previewData:'What would have been sent',
+  noteOpt:'هل تود إضافة شيء؟ (اختياري)',
+  sec:{s1:'نبذة عنك', s2c:'تجربتك مع فودكس', s2n:'أدواتك واحتياجاتك', s3:'التحديات والاحتياجات', s4:'نبض السوق', s5:'ابقَ على تواصل'}
+ }
+};
+
+/* ---------- Products (from the Foodics product list) ---------- */
+var PRODUCTS = [
+ O('core','Foodics Core','Foodics Core',{sub:'POS · RMS · KDS · Cashier · Console'}),
+ O('inv','Inventory & Supply','Inventory & Supply',{sub:'Arzaq'}),
+ O('online','Foodics Online','Foodics Online',{sub:'Web · App · QR'}),
+ O('self','Self-Service & In-Venue','Self-Service & In-Venue',{sub:'Solo · Kiosk · CDS · Wi-Q'}),
+ O('guest','Guest','Guest',{sub:'serVme · Loyalty · CRM · Feedback'}),
+ O('acct','Accounting','Accounting',{sub:'ADD · ZATCA · Payroll'}),
+ O('pay','Foodics Pay','Foodics Pay'),
+ O('capital','Foodics Capital','Foodics Capital'),
+ O('ai','Foodics AI','Foodics AI',{sub:'BI · Agents · Fraud · Index · MCP'}),
+ O('mkt','Marketplace & API','Marketplace & API'),
+ O('superapp','Super App','Super App'),
+ O('hw','Hardware','الأجهزة (Hardware)'),
+ O('ecom','E-commerce','التجارة الإلكترونية (E-commerce)'),
+ O('ent','Enterprise suite','حلول Enterprise',{sub:'Accounting · Inventory · HR · Finance'}),
+ O('notsure','Not sure','لست متأكداً',{exclusive:true})
+];
+var REASONS = [
+ O('price','Price vs value','السعر مقابل القيمة'),
+ O('stability','Stability','الاستقرار'),
+ O('missing','Missing features','ميزات ناقصة'),
+ O('ease','Hard to use','صعوبة الاستخدام'),
+ O('support','Support','الدعم الفني'),
+ O('training','Training','التدريب')
+];
+
+/* ---------- Questions ---------- */
+var cust = function(a){return a.isCustomer==='yes'};
+var haveProducts = function(a){return Array.isArray(a.products)?a.products.filter(function(p){return p!=='notsure'}):[]};
+var LAB5 = [{en:'Very dissatisfied',ar:'غير راضٍ إطلاقاً'},{en:'Dissatisfied',ar:'غير راضٍ'},{en:'Neutral',ar:'محايد'},{en:'Satisfied',ar:'راضٍ'},{en:'Very satisfied',ar:'راضٍ جداً'}];
+
+var QUESTIONS = [
+/* Section 1 */
+{id:'isCustomer',sec:'s1',type:'single',req:true,
+ q:{en:'Are you a Foodics customer today?',ar:'هل أنت عميل لدى فودكس حالياً؟'},
+ opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('no','No (or not anymore)','لا (أو لم أعد كذلك)')]},
+{id:'position',sec:'s1',type:'single',req:true,
+ q:{en:"What's your position?",ar:'ما هو منصبك؟'},
+ opts:[O('owner','Owner / founder','مالك / مؤسس'),O('gm','General manager / operations','مدير عام / عمليات'),O('finance','Finance','المالية'),O('it','IT / technology','التقنية'),O('marketing','Marketing','التسويق'),O('other','Other','أخرى',{other:true})]},
+{id:'entityType',sec:'s1',type:'single',req:true,
+ q:{en:'What type of business do you run?',ar:'ما نوع نشاطك؟'},
+ opts:[O('restaurant','Restaurant','مطعم'),O('cafe','Café','مقهى'),O('bakery','Bakery or sweets','مخبز أو حلويات'),O('cloud','Cloud kitchen','مطبخ سحابي'),O('catering','Catering','تموين وإعاشة'),O('multi','Multiple concepts','أنشطة متعددة'),O('other','Other','أخرى',{other:true})]},
+{id:'branches',sec:'s1',type:'single',req:true,
+ q:{en:'How many branches do you have?',ar:'كم عدد فروعك؟'},
+ opts:[O('1','1 branch','فرع واحد'),O('2-5','2–5','2–5 فروع'),O('6-15','6–15','6–15 فرعاً'),O('16-39','16–39','16–39 فرعاً'),O('40+','40 or more','40 فرعاً أو أكثر')]},
+{id:'markets',sec:'s1',type:'multi',req:true,max:9,
+ q:{en:'Which markets do you operate in?',ar:'في أي أسواق تعمل؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('sa','Saudi Arabia','السعودية'),O('ae','UAE','الإمارات'),O('kw','Kuwait','الكويت'),O('qa','Qatar','قطر'),O('bh','Bahrain','البحرين'),O('om','Oman','عُمان'),O('eg','Egypt','مصر'),O('jo','Jordan','الأردن'),O('other','Other','أخرى',{other:true})]},
+{id:'channels',sec:'s1',type:'multi',max:8,
+ q:{en:'Which channels do you sell through today?',ar:'ما القنوات التي تبيع من خلالها حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('dinein','Dine-in','داخل المطعم'),O('takeaway','Takeaway','سفري / استلام'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('own','Own website or app','موقعي أو تطبيقي الخاص'),O('qr','QR ordering','الطلب عبر QR'),O('paytable','Pay-at-table','الدفع على الطاولة'),O('kiosk','Kiosk','أجهزة الطلب الذاتي (كشك)'),O('reservations','Reservations','الحجوزات')]},
+
+/* Section 2 */
+{id:'satisfaction',sec:'s2',type:'scale',smin:1,smax:10,show:cust,
+ q:{en:'Overall, how satisfied are you with Foodics?',ar:'بشكل عام، ما مدى رضاك عن فودكس؟'},
+ lo:{en:'Very bad',ar:'سيئ جداً'},hi:{en:'Excellent',ar:'ممتاز'}},
+{id:'products',sec:'s2',type:'multi',max:20,show:cust,
+ q:{en:'Which Foodics products do you subscribe to?',ar:'ما منتجات فودكس المشترك بها؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:PRODUCTS,cols:true},
+{id:'unhappy',sec:'s2',type:'items',show:function(a){return cust(a)&&haveProducts(a).length>0},
+ q:{en:'Which products are you not fully satisfied with?',ar:'ما المنتجات التي لست راضياً عنها تماماً؟'},hint:{en:'Pick the product, then tell us why.',ar:'اختر المنتج ثم أخبرنا بالسبب.'}},
+{id:'wanted',sec:'s2',type:'multi',max:3,
+ q:{en:'Which product or service would you like Foodics to add?',ar:'ما المنتج أو الخدمة التي تتمنى أن تضيفها فودكس؟'},
+ qf:function(a){return cust(a)?null:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'}},
+ hint:{en:'Choose up to 3',ar:'اختر حتى 3'},
+ opts:[O('staffing','Staff scheduling and HR','جدولة الموظفين والموارد البشرية'),O('forecast','Smart ordering and demand forecasting','الطلب الذكي وتوقع الطلب'),O('procure','Supplier ordering and procurement','الطلب من الموردين والمشتريات'),O('retention','Customer retention and marketing automation','استبقاء العملاء وأتمتة التسويق'),O('delivery','All delivery-app orders on one screen','جميع طلبات تطبيقات التوصيل في شاشة واحدة'),O('cash','Cash-flow and financing tools','أدوات التدفق النقدي والتمويل'),O('reports','Deeper reports and benchmarks','تقارير ومقارنات أعمق'),O('other','Other','أخرى',{other:true})]},
+{id:'finInterest',sec:'s2',type:'scale',smin:1,smax:5,
+ q:{en:'How interested would you be in banking-type services from Foodics, such as instant deposits and business financing?',ar:'ما مدى اهتمامك بخدمات شبيهة بالخدمات المصرفية من فودكس، مثل الإيداع الفوري وتمويل الأعمال؟'},
+ lo:{en:'Not interested',ar:'غير مهتم'},hi:{en:'Very interested',ar:'مهتم جداً'}},
+{id:'otherProvider',sec:'s2',type:'single',
+ q:{en:'Do you also use another provider?',ar:'هل تستخدم مزوداً آخر إلى جانب فودكس؟'},
+ qf:function(a){return cust(a)?null:{en:'Which system do you use today?',ar:'ما النظام الذي تستخدمه حالياً؟'}},
+ opts:[O('none','No, only Foodics','لا، فودكس فقط'),O('yes','Yes, another provider','نعم، مزود آخر',{other:true,ph:{en:'Which provider?',ar:'اسم المزود'}})],
+ optsf:function(a){return cust(a)?null:[O('none',"I don't use a system yet",'لا أستخدم نظاماً بعد'),O('yes','I use another provider','أستخدم مزوداً آخر',{other:true,ph:{en:'Which provider?',ar:'اسم المزود'}})]}},
+{id:'foodicsPayWhy',sec:'s2',type:'single',
+ show:function(a){return cust(a)&&Array.isArray(a.products)&&a.products.length>0&&a.products.indexOf('pay')<0&&a.products.indexOf('notsure')<0},
+ q:{en:"What's holding you back from Foodics Pay?",ar:'ما الذي يمنعك من استخدام Foodics Pay؟'},
+ opts:[O('unconvinced',"I'm not convinced it's worth it",'لست مقتنعاً بجدواه'),O('unaware',"I didn't know about it",'لم أكن أعرف عنه'),O('benefits',"I don't know what the benefits are",'لا أعرف ما فوائده'),O('na',"It's not available to me",'غير متاح لي'),O('other','Other','أخرى',{other:true})]},
+{id:'workshop',sec:'s2',type:'scale',smin:1,smax:10,
+ q:{en:'How likely are you to join workshops with the Foodics team to test upcoming products and share ideas?',ar:'ما احتمال مشاركتك في ورش عمل مع فريق فودكس لتجربة المنتجات القادمة وتقديم أفكارك؟'},
+ lo:{en:'Not likely',ar:'غير محتمل'},hi:{en:'Very likely',ar:'محتمل جداً'}},
+
+/* Section 3 */
+{id:'techSat',sec:'s3',type:'scale',smin:1,smax:5,labels:LAB5,
+ q:{en:'How satisfied are you with your current technology?',ar:'ما مدى رضاك عن التقنيات التي تستخدمها حالياً؟'}},
+{id:'challenges',sec:'s3',type:'multi',max:3,
+ q:{en:'What are your most pressing challenges in running your business?',ar:'ما أبرز التحديات التي تواجهك في إدارة نشاطك؟'},hint:{en:'Choose up to 3',ar:'اختر حتى 3'},
+ opts:[O('noPlatform','No single platform for all my operations','لا توجد منصة واحدة لجميع عملياتي'),O('devices',"My devices don't connect to each other",'أجهزتي غير مترابطة'),O('manual','Too much manual work','عمل يدوي كثير'),O('costs','Rising operating costs','ارتفاع التكاليف التشغيلية'),O('loan','Difficulty getting a loan','صعوبة الحصول على تمويل'),O('accounting','Accounting problems','مشاكل المحاسبة'),O('inventory','Inventory problems','مشاكل المخزون'),O('other','Other','أخرى',{other:true})]},
+{id:'manualWhere',sec:'s3',type:'multi',max:2,
+ show:function(a){return Array.isArray(a.challenges)&&a.challenges.indexOf('manual')>=0},
+ q:{en:'Where does the manual work hurt most?',ar:'أين يشكّل العمل اليدوي أكبر عبء؟'},hint:{en:'Choose up to 2',ar:'اختر حتى 2'},
+ opts:[O('menu','Menu and price updates','تحديث القائمة والأسعار'),O('recon','Reconciling orders','مطابقة الطلبات'),O('inventory','Inventory','المخزون'),O('payments','Payments and settlement','المدفوعات والتسويات'),O('accounting','Accounting','المحاسبة'),O('reporting','Reporting','التقارير'),O('scheduling','Staff scheduling','جدولة الموظفين')]},
+{id:'unmet',sec:'s3',type:'multi',max:2,
+ q:{en:'What do you need today that neither Foodics nor anyone else has solved for you?',ar:'ما الذي تحتاجه اليوم ولم تستطع فودكس أو أي جهة أخرى حله لك؟'},
+ qf:function(a){return cust(a)?null:{en:'What do you need today that no provider has solved for you?',ar:'ما الذي تحتاجه اليوم ولم يستطع أي مزود حله لك؟'}},
+ hint:{en:"Can't think of one? Pick from these ideas. Up to 2.",ar:'لا يخطر ببالك شيء؟ اختر من هذه الأفكار. حتى اختيارين.'},
+ opts:[O('profit','Knowing my real profit per branch','معرفة ربحي الحقيقي لكل فرع'),O('waste','Cutting food waste and stock-outs','تقليل الهدر ونفاد المخزون'),O('staff','Finding and keeping good staff','إيجاد الموظفين الجيدين والاحتفاظ بهم'),O('guests','Bringing guests back more often','إعادة الضيوف بشكل أكبر'),O('commissions','Cutting delivery-app commissions','تقليل عمولات تطبيقات التوصيل'),O('cash','Cash flow and financing','التدفق النقدي والتمويل'),O('compliance','Keeping up with regulation and e-invoicing','مواكبة اللوائح والفوترة الإلكترونية'),O('none',"Nothing, I'm covered",'لا شيء، احتياجاتي مغطاة',{exclusive:true}),O('other','Other','أخرى',{other:true})]},
+{id:'guestTool',sec:'s3',type:'single',
+ q:{en:'What do you use today to keep guests coming back?',ar:'ما الذي تستخدمه حالياً لإبقاء الضيوف يعودون إليك؟'},
+ opts:[O('loyalty','A loyalty program in my system','برنامج ولاء ضمن نظامي'),O('messages','WhatsApp, Instagram or manual messages','واتساب أو إنستغرام أو رسائل يدوية'),O('sheet','A spreadsheet or notes','جدول بيانات أو ملاحظات'),O('none','Nothing yet','لا شيء حتى الآن'),O('other','Other','أخرى',{other:true})]},
+{id:'guestSat',sec:'s3',type:'scale',smin:1,smax:5,show:function(a){return !!a.guestTool&&a.guestTool!=='none'},
+ q:{en:'How satisfied are you with how you engage your guests?',ar:'ما مدى رضاك عن طريقة تواصلك مع ضيوفك؟'},
+ lo:{en:'Not satisfied',ar:'غير راضٍ'},hi:{en:'Very satisfied',ar:'راضٍ جداً'}},
+
+/* Section 4 */
+{id:'salesTrend',sec:'s4',type:'single',
+ q:{en:'How have your sales changed over the last 12 months?',ar:'كيف تغيّرت مبيعاتك خلال آخر 12 شهراً؟'},
+ opts:[O('up2','Up a lot','ارتفعت كثيراً'),O('up1','Up slightly','ارتفعت قليلاً'),O('flat','About the same','ثابتة تقريباً'),O('dn1','Down slightly','انخفضت قليلاً'),O('dn2','Down a lot','انخفضت كثيراً')]},
+{id:'plan',sec:'s4',type:'single',
+ q:{en:"What's your plan for the next 12 months?",ar:'ما خطتك للأشهر الـ 12 القادمة؟'},
+ opts:[O('open','Open new branches','افتتاح فروع جديدة'),O('same','Stay as we are','البقاء كما نحن'),O('close','Close or consolidate some','إغلاق بعض الفروع أو دمجها')]},
+{id:'margins',sec:'s4',type:'multi',max:3,
+ q:{en:'What squeezes your margins the most?',ar:'ما أكثر ما يضغط على هوامش ربحك؟'},hint:{en:'Choose up to 3',ar:'اختر حتى 3'},
+ opts:[O('food','Food costs','تكلفة المواد الغذائية'),O('rent','Rent','الإيجارات'),O('labour','Labour and hiring','العمالة والتوظيف'),O('commissions','Delivery commissions','عمولات التوصيل'),O('fees','Payment fees','رسوم المدفوعات'),O('competition','Competition','المنافسة'),O('regulation','Regulation and e-invoicing','اللوائح والفوترة الإلكترونية'),O('demand','Weaker demand','ضعف الطلب')],cols:true},
+{id:'onlineShare',sec:'s4',type:'single',
+ q:{en:'About what share of your sales comes from delivery apps and online ordering?',ar:'ما نسبة مبيعاتك تقريباً التي تأتي من تطبيقات التوصيل والطلب عبر الإنترنت؟'},
+ opts:[O('lt10','Less than 10%','أقل من 10٪'),O('10-25','10–25%','10–25٪'),O('26-50','26–50%','26–50٪'),O('gt50','More than 50%','أكثر من 50٪'),O('unsure','Not sure','لست متأكداً')]},
+{id:'salesDrivers',sec:'s4',type:'multi',max:2,
+ q:{en:'What drove your sales the most this year?',ar:'ما الذي رفع مبيعاتك أكثر هذا العام؟'},hint:{en:'Choose up to 2',ar:'اختر حتى 2'},
+ opts:[O('promos','Promotions and discounts','العروض والخصومات'),O('menu','New menu items or limited-time offers','أصناف جديدة أو عروض لفترة محدودة'),O('loyalty','Loyalty program','برامج الولاء'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('social','Social media and influencers','وسائل التواصل والمؤثرون'),O('pricing','Pricing changes','تعديل الأسعار'),O('branches','New branches','فروع جديدة'),O('speed','Faster service','سرعة الخدمة')],cols:true},
+{id:'techSpend',sec:'s4',type:'single',
+ q:{en:'Over the next 12 months, your spending on technology will…',ar:'خلال الأشهر الـ 12 القادمة، سيكون إنفاقك على التقنية…'},
+ opts:[O('up','Increase','أعلى'),O('same','Stay the same','كما هو'),O('down','Decrease','أقل')]},
+{id:'aiUse',sec:'s4',type:'multi',max:9,
+ q:{en:'Where do you use AI in your business today?',ar:'أين تستخدم الذكاء الاصطناعي في نشاطك حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('marketing','Marketing content','محتوى التسويق'),O('guests','Replying to guests','الرد على الضيوف'),O('forecast','Forecasting and ordering','التوقعات والطلب'),O('accounting','Accounting','المحاسبة'),O('menu','Menu and pricing','القائمة والتسعير'),O('other','Other tools','أدوات أخرى',{other:true}),O('none',"I don't use AI yet",'لا أستخدمه بعد',{exclusive:true}),O('want',"I'd like to, but don't know where to start",'أرغب بذلك لكن لا أعرف من أين أبدأ',{exclusive:true})]},
+{id:'trend',sec:'s4',type:'text',
+ q:{en:"In one sentence, what's the biggest change you see coming in F&B?",ar:'في جملة واحدة، ما أكبر تغيير تتوقع أن يشهده قطاع المطاعم والمقاهي؟'}},
+
+/* Section 5 */
+{id:'contact',sec:'s5',type:'contact',
+ q:{en:'Stay in touch',ar:'ابقَ على تواصل'},hint:{en:'Everything here is optional.',ar:'كل ما هنا اختياري.'}}
+];
+var CONTACT_PREFS = [
+ O('interview','Invite me to a short interview','ادعوني إلى مقابلة قصيرة'),
+ O('testing','Invite me to test new products','ادعوني لتجربة المنتجات الجديدة'),
+ O('contact','Have Foodics contact me','أرغب بأن يتواصل معي فريق فودكس'),
+ O('report',"Send me the report when it's published",'أرسلوا لي التقرير عند نشره')
+];
+var WEIGHT = {single:6,scale:6,multi:10,items:16,text:24,contact:22};
+
+/* ---------- State ---------- */
+var state = {
+  lang: (navigator.language||'en').toLowerCase().indexOf('ar')===0 ? 'ar':'en',
+  screen:'intro', cur:null, a:{}, contact:{name:'',entity:'',email:'',phone:'',account:'',prefs:[]},
+  startedAt:Date.now(), lastSec:null, halfShown:false, sending:false, submitError:false, submittedPrefs:[]
+};
+var advTimer = null;
+var hadSaved = false;
+
+function save(){
+  try{
+    if(state.screen==='done') { localStorage.removeItem(STORE_KEY); return; }
+    if(state.screen!=='q') return;
+    localStorage.setItem(STORE_KEY, JSON.stringify({lang:state.lang,cur:state.cur,a:state.a,contact:state.contact,startedAt:state.startedAt,halfShown:state.halfShown}));
+  }catch(e){}
+}
+function load(){
+  try{
+    var s = JSON.parse(localStorage.getItem(STORE_KEY)||'null');
+    if(s && s.cur && s.a){ state.lang=s.lang||state.lang; state.a=s.a; state.contact=s.contact||state.contact; state.startedAt=s.startedAt||Date.now(); state.halfShown=!!s.halfShown; state._resume=s.cur; hadSaved=true; }
+  }catch(e){}
+}
+
+/* ---------- Text helpers ---------- */
+function u(k,vars){
+  var s = UI[state.lang][k]; if(s==null) s = UI.en[k]; s = String(s);
+  if(vars) Object.keys(vars).forEach(function(v){ s = s.replace('{'+v+'}', vars[v]); });
+  return s;
+}
+function L(o){ return o==null ? '' : (typeof o==='string' ? o : (o[state.lang]||o.en)); }
+function qText(q){ var alt = q.qf && q.qf(state.a); return L(alt||q.q); }
+function qOpts(q){ var alt = q.optsf && q.optsf(state.a); return alt||q.opts||[]; }
+function secLabel(sec){
+  var S = UI[state.lang].sec;
+  if(sec==='s2') return cust(state.a)? S.s2c : S.s2n;
+  return S[sec];
+}
+function visibleQs(){ return QUESTIONS.filter(function(q){ return !q.show || q.show(state.a); }); }
+function curQ(){ return QUESTIONS.filter(function(q){return q.id===state.cur})[0]; }
+
+/* ---------- Validation ---------- */
+function hasAnswer(q){
+  var a = state.a, v = a[q.id];
+  switch(q.type){
+    case 'single': return !!v;
+    case 'multi': return Array.isArray(v) && v.length>0;
+    case 'scale': return typeof v==='number';
+    case 'text': return !!(v && String(v).trim());
+    case 'items': return !!a.unhappy_all || (a.unhappy && Object.keys(a.unhappy).length>0);
+    case 'contact': return true;
+  }
+  return false;
+}
+function emailOk(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+function validMsg(q){
+  var a=state.a;
+  if(q.type==='items' && a.unhappy && !a.unhappy_all){
+    var missing = Object.keys(a.unhappy).some(function(k){return !a.unhappy[k]});
+    if(missing) return u('pickReason');
+  }
+  if(q.type==='contact'){
+    var c=state.contact;
+    if(c.email && !emailOk(c.email.trim())) return u('emailBad');
+    if(c.prefs.length && !(c.email.trim()||c.phone.trim())) return u('contactNeed');
+  }
+  return '';
+}
+function canProceed(q){
+  if(validMsg(q)) return false;
+  return q.req ? hasAnswer(q) : true;
+}
+
+/* ---------- Rendering ---------- */
+var screenEl = $('#screen');
+function setAnim(dir){
+  screenEl.classList.remove('anim-fwd','anim-back','anim-none');
+  void screenEl.offsetWidth;
+  screenEl.classList.add('anim-'+(dir||'none'));
+}
+
+function render(dir){
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = state.lang==='ar' ? 'rtl' : 'ltr';
+  $('#langBtn').textContent = u('langBtn');
+  $('#backBtn').setAttribute('aria-label', u('back'));
+  setAnim(dir);
+  if(state.screen==='intro') renderIntro();
+  else if(state.screen==='declined') renderDeclined();
+  else if(state.screen==='done') renderDone();
+  else renderQ();
+  chrome();
+  save();
+}
+
+function renderIntro(){
+  var resume = hadSaved && state._resume;
+  screenEl.innerHTML =
+   '<div class="hero">'+
+    '<h1>'+esc(u('introTitle'))+'</h1>'+
+    '<p class="lead">'+esc(u('introSub'))+'</p>'+
+    '<p class="about">'+esc(u('about'))+'</p>'+
+    '<div class="pills">'+
+      pill('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',u('pill1'))+
+      pill('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',u('pill2'))+
+      pill('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>',u('pill3'))+
+    '</div>'+
+    '<div class="card">'+
+      '<h2>'+esc(u('consentTitle'))+'</h2>'+
+      '<p>'+esc(u('consentText'))+'</p>'+
+      '<div class="stack">'+
+        '<button type="button" class="btn wide" id="agree">'+esc(u('agree'))+ICON_ARROW+'</button>'+
+        (resume?'<button type="button" class="btn ghost wide" id="resume">'+esc(u('resume'))+'</button>':'')+
+        '<button type="button" class="btn ghost wide" id="disagree">'+esc(u('disagree'))+'</button>'+
+      '</div>'+
+      '<p class="note">'+esc(u('interview'))+'</p>'+
+    '</div>'+
+   '</div>';
+}
+function pill(path,text){
+  return '<span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+path+'</svg>'+esc(text)+'</span>';
+}
+function renderDeclined(){
+  screenEl.innerHTML = '<div class="hero"><h1>'+esc(u('declinedTitle'))+'</h1><p class="lead">'+esc(u('declinedText'))+'</p>'+
+    '<button type="button" class="btn" id="startOver">'+esc(u('startOver'))+'</button></div>';
+}
+function renderDone(){
+  var wantsReport = state.submittedPrefs.indexOf('report')>=0;
+  screenEl.innerHTML =
+   '<div class="done">'+
+    '<svg class="ring" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="48"/><path d="M33 53l13 13 26-28"/></svg>'+
+    '<h1>'+esc(u('thanks'))+'</h1>'+
+    '<p>'+esc(u('thanksText'))+'</p>'+
+    (wantsReport?'<p>'+esc(u('thanksReport'))+'</p>':'')+
+    '<button type="button" class="btn ghost" id="share">'+esc(u('share'))+'</button>'+
+    (CONFIGURED?'':'<details class="dbg" open><summary>'+esc(u('previewNote'))+'</summary><pre id="dbgdata"></pre></details>')+
+   '</div>';
+  if(!CONFIGURED){ var p=$('#dbgdata'); if(p) p.textContent = JSON.stringify(state.lastPayload||{},null,2); }
+}
+
+function optHtml(o,i,checked,role,extra){
+  return '<button type="button" class="opt" role="'+role+'" aria-checked="'+(checked?'true':'false')+'" data-v="'+esc(o.v)+'"'+(extra||'')+'>'+
+    '<span class="key" aria-hidden="true">'+LETTERS[i]+'</span>'+
+    '<span class="lbl">'+esc(L(o.l))+(o.sub?'<small>'+esc(o.sub)+'</small>':'')+'</span>'+ICON_TICK+'</button>';
+}
+
+function renderQ(){
+  var q = curQ(), a = state.a, html = '';
+  var V = visibleQs(), idx = V.indexOf(q);
+  var reqTag = q.req ? '<span class="req-dot">'+esc(u('required'))+'</span>' : '';
+  html += '<div class="meta"><span class="chip" id="chip">'+esc(secLabel(q.sec))+'</span><span class="count">'+(idx+1)+' / '+V.length+'</span></div>';
+  html += '<h1 class="q" id="qh" tabindex="-1">'+esc(qText(q))+reqTag+'</h1>';
+  if(q.hint) html += '<p class="hint">'+esc(L(q.hint))+'</p>';
+
+  if(q.type==='single'){
+    var opts = qOpts(q), sel = a[q.id], other = null;
+    html += '<div class="opts'+(opts.length>5?' cols':'')+'" role="radiogroup">';
+    opts.forEach(function(o,i){ html += optHtml(o,i,sel===o.v,'radio'); if(sel===o.v && o.other) other=o; });
+    html += '</div>';
+    if(other) html += '<input class="inp other" id="oth" type="text" maxlength="120" placeholder="'+esc(L(other.ph)||u('other'))+'" value="'+esc(a[q.id+'_other']||'')+'">';
+  }
+  else if(q.type==='multi'){
+    var sel2 = Array.isArray(a[q.id])?a[q.id]:[], opts2 = qOpts(q), other2 = null;
+    html += '<div class="opts'+((q.cols||opts2.length>6)?' cols':'')+'" role="group">';
+    opts2.forEach(function(o,i){ html += optHtml(o,i,sel2.indexOf(o.v)>=0,'checkbox'); if(sel2.indexOf(o.v)>=0 && o.other) other2=o; });
+    html += '</div>';
+    if(other2) html += '<input class="inp other" id="oth" type="text" maxlength="120" placeholder="'+esc(L(other2.ph)||u('other'))+'" value="'+esc(a[q.id+'_other']||'')+'">';
+  }
+  else if(q.type==='scale'){
+    var n = q.smax-q.smin+1, cur = a[q.id], lab = !!q.labels;
+    html += '<div class="scale n'+n+'" role="radiogroup">';
+    for(var v=q.smin; v<=q.smax; v++){
+      html += '<button type="button" class="sc'+(lab?' lab':'')+'" role="radio" aria-checked="'+(cur===v)+'" data-n="'+v+'">'+v+(lab?'<span>'+esc(L(q.labels[v-1]))+'</span>':'')+'</button>';
+    }
+    html += '</div>';
+    if(!lab) html += '<div class="ends"><span>'+esc(q.smin+' · '+L(q.lo))+'</span><span>'+esc(q.smax+' · '+L(q.hi))+'</span></div>';
+  }
+  else if(q.type==='text'){
+    html += '<textarea class="inp" id="txt" maxlength="400" rows="3" placeholder="'+esc(u('typeHere'))+'">'+esc(a[q.id]||'')+'</textarea>';
+  }
+  else if(q.type==='items'){
+    var picks = a.unhappy||{}, prods = PRODUCTS.filter(function(p){return haveProducts(a).indexOf(p.v)>=0});
+    html += '<div class="irs">';
+    prods.forEach(function(p,i){
+      var on = Object.prototype.hasOwnProperty.call(picks,p.v);
+      html += '<div class="ir">'+optHtml(p,i,on,'checkbox',' data-pick="1"');
+      if(on){
+        html += '<div class="reasons" role="radiogroup">';
+        REASONS.forEach(function(r){ html += '<button type="button" class="rs" role="radio" aria-checked="'+(picks[p.v]===r.v)+'" data-pid="'+esc(p.v)+'" data-r="'+esc(r.v)+'">'+esc(L(r.l))+'</button>'; });
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    html += optHtml({v:'__all',l:{en:"I'm satisfied with all my products",ar:'أنا راضٍ عن جميع منتجاتي'}},prods.length,!!a.unhappy_all,'checkbox',' data-all="1"');
+    html += '</div>';
+    html += '<textarea class="inp" id="note" maxlength="400" rows="2" style="margin-top:14px;min-height:80px" placeholder="'+esc(u('noteOpt'))+'">'+esc(a.unhappy_note||'')+'</textarea>';
+  }
+  else if(q.type==='contact'){
+    var c = state.contact;
+    html += '<div class="opts cols" role="group">';
+    CONTACT_PREFS.forEach(function(o,i){ html += optHtml(o,i,c.prefs.indexOf(o.v)>=0,'checkbox',' data-pref="1"'); });
+    html += '</div>';
+    var ar = state.lang==='ar';
+    html += '<div class="cf" style="margin-top:22px">'+
+      field('name',ar?'الاسم الكامل':'Full name','text',c.name,'name')+
+      field('entity',ar?'اسم المنشأة':'Business name','text',c.entity,'organization')+
+      field('email',ar?'البريد الإلكتروني':'Email','email',c.email,'email')+
+      field('phone',ar?'رقم الجوال':'Phone','tel',c.phone,'tel')+
+      (cust(a)?'<div class="wide">'+field('account',ar?'رقم حساب فودكس (إن وجد)':'Foodics account number (if any)','text',c.account,'off')+'</div>':'')+
+      '</div>';
+    html += '<input class="pot" type="text" id="pot" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">';
+    html += '<div class="err" id="cerr" role="alert" '+(validMsg(q)?'':'hidden')+'>'+esc(validMsg(q))+'</div>';
+    if(state.submitError) html += '<div class="err" role="alert">'+esc(u('sendFail'))+'</div>';
+  }
+  screenEl.innerHTML = html;
+}
+function field(id,label,type,val,ac){
+  return '<label>'+esc(label)+'<input class="inp" data-f="'+id+'" type="'+type+'" maxlength="120" autocomplete="'+ac+'" value="'+esc(val||'')+'"'+(type==='tel'?' inputmode="tel" dir="ltr"':'')+(type==='email'?' inputmode="email" dir="ltr"':'')+'></label>';
+}
+
+/* ---------- Chrome (progress, dock, time) ---------- */
+function chrome(){
+  var q = state.screen==='q' ? curQ() : null;
+  var dock = $('#dock');
+  dock.hidden = !q;
+  var bar = $('#bar'), tl = $('#timeLeft');
+  if(!q){
+    bar.style.width = state.screen==='done' ? '100%' : '0%';
+    tl.textContent = '';
+    return;
+  }
+  var V = visibleQs(), idx = V.indexOf(q);
+  bar.style.width = Math.max(3, Math.round((idx/V.length)*100)) + '%';
+  var secs = 0; for(var i=idx;i<V.length;i++) secs += WEIGHT[V[i].type]||8;
+  tl.textContent = secs>75 ? u('minLeft',{n:Math.round(secs/60)||1}) : u('lessMin');
+  updateDock();
+  if(state.lastSec!==null && state.lastSec!==q.sec){ var chip=$('#chip'); if(chip) chip.classList.add('flash'); }
+  state.lastSec = q.sec;
+  if(!state.halfShown && idx>=Math.floor(V.length/2) && idx>2){ state.halfShown=true; toast(u('halfway')); }
+  if(idx===V.length-1) { /* last step cue */ var h=$('#chip'); if(h) h.textContent = secLabel(q.sec)+' · '+u('lastStep'); }
+}
+function toast(msg){
+  var t=document.createElement('div'); t.className='toast'; t.textContent=msg; t.setAttribute('role','status');
+  document.body.appendChild(t); setTimeout(function(){t.remove()},2500);
+}
+function updateDock(){
+  var q = curQ(); if(!q) return;
+  var V = visibleQs(), last = V.indexOf(q)===V.length-1;
+  var btn = $('#nextBtn'), hint = $('#dockHint'), a = state.a;
+  var answered = hasAnswer(q) && !(q.type==='contact');
+  var ok = canProceed(q);
+  var label;
+  if(state.sending){ btn.innerHTML = '<span class="spinner"></span>'+esc(u('sending')); btn.disabled = true; return; }
+  if(last) label = u('submit');
+  else if(answered) label = u('next');
+  else label = q.req ? u('next') : u('skip');
+  btn.innerHTML = esc(label) + (last?'':ICON_ARROW);
+  btn.disabled = !ok;
+  var h='';
+  if(q.type==='multi' && q.max && q.max<9){ var n=(Array.isArray(a[q.id])?a[q.id].length:0); h = n? u('selected',{x:n,n:q.max}) : ''; }
+  if(q.type==='items' || q.type==='contact'){ h = validMsg(q); }
+  hint.textContent = h;
+}
+
+/* ---------- Navigation ---------- */
+function startSurvey(fromResume){
+  var V = visibleQs();
+  if(fromResume && state._resume && V.some(function(q){return q.id===state._resume})) state.cur = state._resume;
+  else { state.cur = V[0].id; if(!fromResume){ state.a={}; state.contact={name:'',entity:'',email:'',phone:'',account:'',prefs:[]}; state.startedAt=Date.now(); state.halfShown=false; } }
+  state.screen='q'; state.lastSec=null; state.submitError=false;
+  render('fwd'); focusStage();
+}
+function next(){
+  clearTimeout(advTimer);
+  var q=curQ(); if(!q || !canProceed(q)) return;
+  var V=visibleQs(), i=V.indexOf(q);
+  if(i<V.length-1){ state.cur=V[i+1].id; render('fwd'); focusStage(); }
+  else submit();
+}
+function back(){
+  clearTimeout(advTimer);
+  var V=visibleQs(), i=V.indexOf(curQ());
+  if(i>0){ state.cur=V[i-1].id; render('back'); focusStage(); }
+  else { state.screen='intro'; render('back'); }
+}
+function focusStage(){
+  var q=curQ(); if(!q) return;
+  var t = q.type==='text' ? $('#txt') : null;
+  var el = t || $('#qh');
+  if(el) setTimeout(function(){ try{ el.focus({preventScroll:true}); }catch(e){} }, 60);
+  window.scrollTo({top:0,behavior:'auto'});
+}
+function repaint(focusSel){
+  setAnim('none'); renderQ(); chrome(); save();
+  if(focusSel){ var el=screenEl.querySelector(focusSel); if(el){ try{el.focus({preventScroll:true})}catch(e){} } }
+}
+function scheduleAdvance(){
+  clearTimeout(advTimer);
+  advTimer = setTimeout(next, 340);
+}
+
+/* ---------- Answer handling ---------- */
+function findOpt(q,v){ return qOpts(q).filter(function(o){return o.v===v})[0]; }
+
+screenEl.addEventListener('click',function(e){
+  var t = e.target;
+  var b = t.closest('button'); if(!b) return;
+  if(b.id==='agree'){ startSurvey(false); return; }
+  if(b.id==='resume'){ startSurvey(true); return; }
+  if(b.id==='disagree'){ state.screen='declined'; render('fwd'); return; }
+  if(b.id==='startOver'){ state.screen='intro'; render('back'); return; }
+  if(b.id==='share'){ copyLink(b); return; }
+  var q = curQ(); if(!q || state.screen!=='q') return;
+  clearTimeout(advTimer);
+
+  if(q.type==='single' && b.classList.contains('opt')){
+    var v = b.dataset.v, o = findOpt(q,v);
+    state.a[q.id] = v;
+    if(!o.other) delete state.a[q.id+'_other'];
+    repaint('[data-v="'+cssEsc(v)+'"]');
+    if(o.other){ var oi=$('#oth'); if(oi) oi.focus({preventScroll:true}); } else scheduleAdvance();
+  }
+  else if(q.type==='multi' && b.classList.contains('opt')){
+    var val = b.dataset.v, o2 = findOpt(q,val), arr = Array.isArray(state.a[q.id]) ? state.a[q.id].slice() : [];
+    var at = arr.indexOf(val);
+    if(at>=0){ arr.splice(at,1); if(o2.other) delete state.a[q.id+'_other']; }
+    else {
+      if(o2.exclusive){ arr = []; delete state.a[q.id+'_other']; }
+      else { arr = arr.filter(function(x){ var ox=findOpt(q,x); return !(ox&&ox.exclusive); }); }
+      var cap = q.max;
+      if(cap && cap<9 && arr.length>=cap && !o2.exclusive){ b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); return; }
+      arr.push(val);
+    }
+    if(arr.length) state.a[q.id]=arr; else delete state.a[q.id];
+    repaint('[data-v="'+cssEsc(val)+'"]');
+    if(at<0 && o2.other){ var oi2=$('#oth'); if(oi2) oi2.focus({preventScroll:true}); }
+  }
+  else if(q.type==='scale' && b.classList.contains('sc')){
+    state.a[q.id] = parseInt(b.dataset.n,10);
+    repaint('[data-n="'+b.dataset.n+'"]');
+    scheduleAdvance();
+  }
+  else if(q.type==='items'){
+    var a = state.a;
+    if(b.dataset.all){
+      a.unhappy_all = !a.unhappy_all; if(a.unhappy_all) a.unhappy = {};
+      repaint('[data-all="1"]'); return;
+    }
+    if(b.dataset.pick){
+      a.unhappy = a.unhappy || {}; a.unhappy_all = false;
+      if(Object.prototype.hasOwnProperty.call(a.unhappy,b.dataset.v)) delete a.unhappy[b.dataset.v]; else a.unhappy[b.dataset.v] = '';
+      repaint('[data-v="'+cssEsc(b.dataset.v)+'"]'); return;
+    }
+    if(b.dataset.r){
+      a.unhappy[b.dataset.pid] = b.dataset.r;
+      repaint('[data-pid="'+cssEsc(b.dataset.pid)+'"][data-r="'+cssEsc(b.dataset.r)+'"]'); return;
+    }
+  }
+  else if(q.type==='contact' && b.dataset.pref){
+    var p = state.contact.prefs, k = p.indexOf(b.dataset.v);
+    if(k>=0) p.splice(k,1); else p.push(b.dataset.v);
+    repaint('[data-v="'+cssEsc(b.dataset.v)+'"]');
+  }
+});
+function cssEsc(s){ return String(s).replace(/(["\\\]])/g,'\\$1'); }
+
+screenEl.addEventListener('input',function(e){
+  var t=e.target, q=curQ(); if(!q) return;
+  if(t.id==='oth'){ state.a[q.id+'_other']=t.value; save(); }
+  else if(t.id==='txt'){ state.a[q.id]=t.value; updateDock(); save(); }
+  else if(t.id==='note'){ state.a.unhappy_note=t.value; save(); }
+  else if(t.dataset && t.dataset.f){
+    state.contact[t.dataset.f]=t.value; updateDock();
+    var msg=validMsg(q), box=$('#cerr'); if(box){ box.hidden=!msg; box.textContent=msg; }
+    save();
+  }
+});
+
+$('#nextBtn').addEventListener('click',next);
+$('#backBtn').addEventListener('click',back);
+$('#langBtn').addEventListener('click',function(){ state.lang = state.lang==='ar'?'en':'ar'; render('none'); });
+
+document.addEventListener('keydown',function(e){
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  var tag=(e.target.tagName||'').toLowerCase();
+  var typing = tag==='input'||tag==='textarea';
+  if(state.screen!=='q'){ return; }
+  var q=curQ(); if(!q) return;
+  if(e.key==='Enter'){
+    if(tag==='textarea' && !e.shiftKey && q.type!=='text') return;
+    if(tag==='textarea' && q.type==='text' && e.shiftKey) return;
+    if(tag==='button' && e.target.id!=='nextBtn') { /* let buttons activate normally */ return; }
+    if(q.type==='contact' && tag!=='input') return;
+    e.preventDefault(); next(); return;
+  }
+  if(typing) return;
+  if(q.type==='single' || q.type==='multi'){
+    var i = LETTERS.indexOf(e.key.toUpperCase());
+    var opts = qOpts(q);
+    if(e.key.length===1 && i>=0 && i<opts.length){
+      var el = screenEl.querySelector('[data-v="'+cssEsc(opts[i].v)+'"]'); if(el){ e.preventDefault(); el.click(); }
+    }
+  }
+  if(q.type==='scale' && /^[0-9]$/.test(e.key)){
+    var n = e.key==='0' ? 10 : parseInt(e.key,10);
+    var el2 = screenEl.querySelector('[data-n="'+n+'"]'); if(el2){ el2.click(); }
+  }
+});
+
+/* ---------- Submit ---------- */
+function buildPayload(){
+  var V = visibleQs(), keep = {}, a = state.a, out = {};
+  V.forEach(function(q){ keep[q.id]=1; keep[q.id+'_other']=1; if(q.type==='items'){ keep.unhappy=1; keep.unhappy_all=1; keep.unhappy_note=1; } });
+  Object.keys(a).forEach(function(k){ if(keep[k] && k!=='contact'){ var v=a[k]; if(v!==''&&v!=null) out[k]=v; } });
+  var c = state.contact;
+  var contact = {};
+  if(c.name.trim()) contact.name=c.name.trim();
+  if(c.entity.trim()) contact.entity=c.entity.trim();
+  if(c.email.trim()) contact.email=c.email.trim();
+  if(c.phone.trim()) contact.phone=c.phone.trim();
+  if(c.account.trim() && cust(a)) contact.foodics_account=c.account.trim();
+  if(c.prefs.length) contact.prefs=c.prefs.slice();
+  var src=''; try{ src = new URLSearchParams(location.search).get('src')||''; }catch(e){}
+  return {
+    survey_version:VERSION, language:state.lang, consent:true,
+    is_customer: a.isCustomer==='yes',
+    duration_seconds: Math.min(7200, Math.round((Date.now()-state.startedAt)/1000)),
+    source: src.slice(0,60)||null,
+    answers: out, contact: contact
+  };
+}
+function submit(){
+  if(state.sending) return;
+  var q = curQ(); if(q && !canProceed(q)) return;
+  var pot = $('#pot'); var isBot = pot && pot.value;
+  var payload = buildPayload();
+  state.sending = true; state.submitError=false; updateDock();
+  var finish = function(){
+    state.sending=false; state.submittedPrefs = payload.contact.prefs||[]; state.lastPayload=payload;
+    state.screen='done'; try{localStorage.removeItem(STORE_KEY)}catch(e){}
+    render('fwd'); window.scrollTo({top:0});
+  };
+  if(isBot){ finish(); return; }
+  if(!CONFIGURED){ setTimeout(finish,600); return; }
+  var headers = {'Content-Type':'application/json','apikey':CFG.SUPABASE_ANON_KEY,'Prefer':'return=minimal'};
+  if(String(CFG.SUPABASE_ANON_KEY).indexOf('eyJ')===0) headers['Authorization']='Bearer '+CFG.SUPABASE_ANON_KEY;
+  fetch(CFG.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/'+CFG.TABLE,{method:'POST',headers:headers,body:JSON.stringify(payload)})
+   .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); finish(); })
+   .catch(function(err){ console.error('Submit failed',err); state.sending=false; state.submitError=true; renderQ(); chrome(); });
+}
+function copyLink(btn){
+  var url = location.href.split('#')[0].split('?')[0];
+  var done = function(){ var old=btn.textContent; btn.textContent=u('copied'); setTimeout(function(){btn.textContent=old},1800); };
+  try{ navigator.clipboard.writeText(url).then(done,function(){}); }catch(e){}
+}
+
+/* ---------- Boot ---------- */
+load();
+render('none');
+window.__survey = {state:state,visibleQs:visibleQs,QUESTIONS:QUESTIONS,buildPayload:buildPayload,
+  go:function(id){ state.screen='q'; state.cur=id; render('none'); }};
+})();
+</script>
+</body>
+</html>

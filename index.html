@@ -257,7 +257,7 @@ var UI = {
  en:{
   langBtn:'عربي',
   introTitle:'Help shape the future of F&B in the region',
-  introSub:'Your answers will help us to better serve you',
+  introSub:'Your answers will help us better serve you',
   about:'Foodics is a SaaS and fintech company that helps restaurants, cafés and shops run everything from orders to payments to inventory on one cloud platform.',
   pill1:'About 5 minutes',
   consentTitle:'Before we start',
@@ -439,10 +439,10 @@ var QUESTIONS = [
  qf:function(a){return cust(a)?null:{en:'What do you need today that no provider has solved for you?',ar:'ما الذي تحتاجه اليوم ولم يستطع أي مزود حله لك؟'}},
  hint:{en:"Can't think of one? Pick from these ideas. Up to 2.",ar:'لا يخطر ببالك شيء؟ اختر من هذه الأفكار. حتى اختيارين.'},
  opts:[O('profit','Knowing my real profit per branch','معرفة ربحي الحقيقي لكل فرع'),O('waste','Cutting food waste and stock-outs','تقليل الهدر ونفاد المخزون'),O('staff','Finding and keeping good staff','إيجاد الموظفين الجيدين والاحتفاظ بهم'),O('guests','Bringing guests back more often','إعادة الضيوف بشكل أكبر'),O('commissions','Cutting delivery-app commissions','تقليل عمولات تطبيقات التوصيل'),O('cash','Cash flow and financing','التدفق النقدي والتمويل'),O('compliance','Keeping up with regulation and e-invoicing','مواكبة اللوائح والفوترة الإلكترونية'),O('none',"Nothing, I'm covered",'لا شيء، احتياجاتي مغطاة',{exclusive:true}),O('other','Other','أخرى',{other:true})]},
-{id:'guestTool',sec:'s3',type:'single',
- q:{en:'What do you use today to keep guests coming back?',ar:'ما الذي تستخدمه حالياً لإبقاء الضيوف يعودون إليك؟'},
- opts:[O('loyalty','A loyalty program in my system','برنامج ولاء ضمن نظامي'),O('messages','WhatsApp, Instagram or manual messages','واتساب أو إنستغرام أو رسائل يدوية'),O('sheet','A spreadsheet or notes','جدول بيانات أو ملاحظات'),O('none','Nothing yet','لا شيء حتى الآن'),O('other','Other','أخرى',{other:true})]},
-{id:'guestSat',sec:'s3',type:'scale',smin:1,smax:5,show:function(a){return !!a.guestTool&&a.guestTool!=='none'},
+{id:'guestTool',sec:'s3',type:'multi',max:9,
+ q:{en:'What do you use today to keep guests coming back?',ar:'ما الذي تستخدمه حالياً لإبقاء الضيوف يعودون إليك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('loyalty','A loyalty program in my system','برنامج ولاء ضمن نظامي'),O('messages','WhatsApp, Instagram or manual messages','واتساب أو إنستغرام أو رسائل يدوية'),O('sheet','A spreadsheet or notes','جدول بيانات أو ملاحظات'),O('other','Other','أخرى',{other:true}),O('none','Nothing yet','لا شيء حتى الآن',{exclusive:true})]},
+{id:'guestSat',sec:'s3',type:'scale',smin:1,smax:5,show:function(a){return Array.isArray(a.guestTool)&&a.guestTool.some(function(x){return x!=='none'})},
  q:{en:'How satisfied are you with how you engage your guests?',ar:'ما مدى رضاك عن طريقة تواصلك مع ضيوفك؟'},
  lo:{en:'Not satisfied',ar:'غير راضٍ'},hi:{en:'Very satisfied',ar:'راضٍ جداً'}},
 

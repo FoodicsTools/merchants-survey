@@ -360,7 +360,7 @@ var QUESTIONS = [
  opts:[O('restaurant','Restaurant','مطعم'),O('cafe','Café','مقهى'),O('bakery','Bakery or sweets','مخبز أو حلويات'),O('cloud','Cloud kitchen','مطبخ سحابي'),O('catering','Catering','تموين وإعاشة'),O('other','Other','أخرى',{other:true})]},
 {id:'branches',sec:'s1',type:'single',req:true,exact:true,noAuto:true,
  q:{en:'How many branches do you have?',ar:'كم عدد فروعك؟'},
- opts:[O('1-5','1 to 5','من 1 إلى 5 فروع'),O('6-50','6 to 50','من 6 إلى 50 فرعاً'),O('51+','51 or more','51 فرعاً أو أكثر')]},
+ opts:[O('1','1 branch','فرع واحد'),O('2-3','2 to 3','من 2 إلى 3 فروع'),O('4-9','4 to 9','من 4 إلى 9 فروع'),O('10-24','10 to 24','من 10 إلى 24 فرعاً'),O('25-99','25 to 99','من 25 إلى 99 فرعاً'),O('100+','100 or more','100 فرع أو أكثر')]},
 {id:'channels',sec:'s1',type:'multi',max:8,
  q:{en:'Which channels do you sell through today?',ar:'ما القنوات التي تبيع من خلالها حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('dinein','Dine-in','داخل المطعم'),O('takeaway','Takeaway','سفري / استلام'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('own','Own website or app','موقعي أو تطبيقي الخاص'),O('qr','QR ordering','الطلب عبر QR'),O('paytable','Pay-at-table','الدفع على الطاولة'),O('kiosk','Kiosk','أجهزة الطلب الذاتي (كشك)'),O('reservations','Reservations','الحجوزات')]},
@@ -839,7 +839,7 @@ screenEl.addEventListener('input',function(e){
     if(digits){
       var n = parseInt(digits,10);
       state.a[q.id+'_exact'] = digits;
-      state.a[q.id] = n<=5 ? '1-5' : (n<=50 ? '6-50' : '51+');
+      state.a[q.id] = n<=1 ? '1' : (n<=3 ? '2-3' : (n<=9 ? '4-9' : (n<=24 ? '10-24' : (n<=99 ? '25-99' : '100+'))));
     } else delete state.a[q.id+'_exact'];
     Array.prototype.forEach.call(screenEl.querySelectorAll('.opt[data-v]'),function(el){ el.setAttribute('aria-checked', String(state.a[q.id]===el.dataset.v)); });
     updateDock(); save();

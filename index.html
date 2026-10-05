@@ -89,7 +89,7 @@ html[lang="ar"] .chip{letter-spacing:0;text-transform:none;font-size:14px}
 h1.q{margin:0 0 10px;font-size:clamp(26px,4.4vw,42px);line-height:1.14;font-weight:600;letter-spacing:-.012em;text-wrap:balance;outline:none}
 html[lang="ar"] h1.q{line-height:1.4;letter-spacing:0}
 .hint{margin:0 0 26px;color:var(--lav);font-size:17px}
-.req-dot{display:inline-block;margin-inline-start:8px;font-size:13px;font-weight:600;color:var(--lav);vertical-align:middle;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
+.req-dot{display:none;margin-inline-start:8px;font-size:13px;font-weight:600;color:var(--lav);vertical-align:middle;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
 .q+.opts,.q+.scale,.q+.inp,.q+.irs,.q+.cf{margin-top:26px}
 
 /* Options */
@@ -284,6 +284,7 @@ var UI = {
   previewNote:'Preview mode: answers are not saved. Add your Supabase keys in config.js to start collecting responses.', previewData:'What would have been sent',
   noteOpt:'Anything you would like to add? (optional)',
   exactPh:'Exact number (optional)',
+  answerFirst:'Please answer to continue',
   sec:{s1:'Introduction', s4:'Market insights', s2c:'Your Foodics experience', s2n:'Your tools and needs', s3:'Challenges and needs', s5:'Stay in touch'}
  },
  ar:{
@@ -311,6 +312,7 @@ var UI = {
   previewNote:'Preview mode: answers are not saved. Add your Supabase keys in config.js to start collecting responses.', previewData:'What would have been sent',
   noteOpt:'هل تود إضافة شيء؟ (اختياري)',
   exactPh:'العدد الدقيق (اختياري)',
+  answerFirst:'يرجى الإجابة للمتابعة',
   sec:{s1:'مقدمة', s4:'رؤى السوق', s2c:'تجربتك مع فودكس', s2n:'أدواتك واحتياجاتك', s3:'التحديات والاحتياجات', s5:'ابقَ على تواصل'}
  }
 };
@@ -423,7 +425,7 @@ var QUESTIONS = [
  q:{en:'Which product or service would you like Foodics to add?',ar:'ما المنتج أو الخدمة التي تتمنى أن تضيفها فودكس؟'},
  qf:function(a){return cust(a)?null:(former(a)?{en:'Which product or service would you have liked Foodics to offer?',ar:'ما المنتج أو الخدمة التي كنت تتمنى أن تقدمها فودكس؟'}:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'})},
  hint:{en:'Choose up to 3',ar:'اختر حتى 3'},
- opts:[O('hr','HR','الموارد البشرية'),O('forecast','Demand forecasting','توقع الطلب'),O('procure','Supplier ordering and procurement','الطلب من الموردين والمشتريات'),O('marketing','Marketing services','خدمات التسويق'),O('reports','Deeper reports and benchmarks','تقارير ومقارنات أعمق'),O('other','Other','أخرى',{other:true})]},
+ opts:[O('hr','HR','الموارد البشرية'),O('forecast','Demand forecasting','توقع الطلب'),O('procure','Supplier ordering and procurement','الطلب من الموردين والمشتريات'),O('marketing','Marketing services','خدمات التسويق'),O('reports','Deeper reports and benchmarks','تقارير ومقارنات أعمق'),O('other','Other','أخرى',{other:true}),O('none','Nothing more for now','لا شيء إضافي حالياً',{exclusive:true})]},
 {id:'finInterest',sec:'s2',type:'scale',smin:1,smax:5,
  q:{en:'How interested would you be in banking-type services from Foodics, such as instant deposits and business financing?',ar:'ما مدى اهتمامك بخدمات شبيهة بالخدمات المصرفية من فودكس، مثل الإيداع الفوري وتمويل الأعمال؟'},
  qf:function(a){return cust(a)?null:{en:'How interested would you be in banking-type services from your technology provider, such as instant deposits and business financing?',ar:'ما مدى اهتمامك بخدمات شبيهة بالخدمات المصرفية من مزود التقنية لديك، مثل الإيداع الفوري وتمويل الأعمال؟'}},
@@ -472,6 +474,8 @@ var QUESTIONS = [
 {id:'contact',sec:'s5',type:'contact',
  q:{en:'Stay in touch',ar:'ابقَ على تواصل'},hint:{en:'Everything here is optional.',ar:'كل ما هنا اختياري.'}}
 ];
+/* Every question must be answered. Only the last contact page stays voluntary (personal details). */
+QUESTIONS.forEach(function(q){ if(q.type!=='contact') q.req = true; });
 var CONTACT_PREFS = [
  O('interview','Invite me to a short interview','ادعوني إلى مقابلة قصيرة'),
  O('testing','Invite me to test new products','ادعوني لتجربة المنتجات الجديدة'),
@@ -742,6 +746,7 @@ function updateDock(){
   var h='';
   if(q.type==='multi' && q.max && q.max<9){ var n=(Array.isArray(a[q.id])?a[q.id].length:0); h = n? u('selected',{x:n,n:q.max}) : ''; }
   if(q.type==='items' || q.type==='contact'){ h = validMsg(q); }
+  if(!ok && !h){ h = u('answerFirst'); }
   hint.textContent = h;
 }
 

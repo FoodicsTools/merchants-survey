@@ -120,7 +120,8 @@ html[lang="ar"] h1.q{line-height:1.4;letter-spacing:0}
 .sc[aria-checked="true"]{background:#fff;color:var(--brand);border-color:#fff;transform:translateY(-2px)}
 .scale.n10{grid-template-columns:repeat(10,minmax(0,1fr))}
 .scale.n5{grid-template-columns:repeat(5,minmax(0,1fr))}
-@media (max-width:560px){.scale.n10{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.scale.n11{grid-template-columns:repeat(11,minmax(0,1fr))}
+@media (max-width:560px){.scale.n10{grid-template-columns:repeat(5,minmax(0,1fr))}.scale.n11{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .sc.lab{aspect-ratio:auto;padding:14px 4px 12px;gap:6px;align-content:start}
 .sc.lab span{font-size:12.5px;font-weight:500;line-height:1.2;text-align:center;opacity:.9}
 .ends{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:14px;color:var(--lav)}
@@ -342,6 +343,8 @@ var REASONS = [
 
 /* ---------- Questions ---------- */
 var cust = function(a){return a.isCustomer==='yes'};
+var former = function(a){return a.isCustomer==='former'};
+var hist = function(a){return a.isCustomer==='yes'||a.isCustomer==='former'};   /* uses or used Foodics */
 var haveProducts = function(a){return Array.isArray(a.products)?a.products.filter(function(p){return p!=='notsure'}):[]};
 var LAB5 = [{en:'Very dissatisfied',ar:'غير راضٍ إطلاقاً'},{en:'Dissatisfied',ar:'غير راضٍ'},{en:'Neutral',ar:'محايد'},{en:'Satisfied',ar:'راضٍ'},{en:'Very satisfied',ar:'راضٍ جداً'}];
 var LABPRICE = [{en:'Not justified at all',ar:'غير مبررة إطلاقاً'},{en:'Not very justified',ar:'غير مبررة إلى حد كبير'},{en:'Neutral',ar:'محايد'},{en:'Mostly justified',ar:'مبررة إلى حد كبير'},{en:'Fully justified',ar:'مبررة تماماً'}];
@@ -350,8 +353,8 @@ var LABPRICE = [{en:'Not justified at all',ar:'غير مبررة إطلاقاً'
 var QUESTIONS = [
 /* Introduction */
 {id:'isCustomer',sec:'s1',type:'single',req:true,
- q:{en:'Are you a Foodics customer today?',ar:'هل أنت عميل لدى فودكس حالياً؟'},
- opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('no','No (or not anymore)','لا (أو لم أعد كذلك)')]},
+ q:{en:'Are you a Foodics customer?',ar:'هل أنت عميل لدى فودكس؟'},
+ opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (لم أعد عميلاً لديهم)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
 {id:'position',sec:'s1',type:'single',req:true,
  q:{en:"What's your position?",ar:'ما هو منصبك؟'},
  opts:[O('owner','Owner / founder','مالك / مؤسس'),O('gm','General manager / operations','مدير عام / عمليات'),O('finance','Finance','المالية'),O('it','IT / technology','التقنية'),O('marketing','Marketing','التسويق'),O('other','Other','أخرى',{other:true})]},
@@ -391,22 +394,34 @@ var QUESTIONS = [
  q:{en:"In one sentence, what's the biggest change you see coming in F&B?",ar:'في جملة واحدة، ما أكبر تغيير تتوقع أن يشهده قطاع المطاعم والمقاهي؟'}},
 
 /* Foodics experience (customers) / tools and needs (non-customers) */
-{id:'satisfaction',sec:'s2',type:'scale',smin:1,smax:10,show:cust,
+{id:'nps',sec:'s2',type:'scale',smin:0,smax:10,show:cust,
+ q:{en:'How likely are you to recommend Foodics to another restaurant or café owner?',ar:'ما مدى احتمال أن توصي باستخدام فودكس لمالك مطعم أو مقهى آخر؟'},
+ lo:{en:'Not at all likely',ar:'غير محتمل إطلاقاً'},hi:{en:'Extremely likely',ar:'محتمل جداً'}},
+{id:'leaveReason',sec:'s2',type:'single',show:former,
+ q:{en:'What was the main reason you stopped using Foodics?',ar:'ما السبب الرئيسي لتوقفك عن استخدام فودكس؟'},
+ opts:[O('price','Price or subscription cost','السعر أو تكلفة الاشتراك'),O('lowuse',"We weren't using enough features to justify the cost",'لم نكن نستخدم مزايا كافية تبرر التكلفة'),O('support','Support quality or slow problem resolution','جودة الدعم الفني أو بطء حل المشكلات'),O('stability','Instability','عدم استقرار النظام'),O('ease','Hard to use or weak training','صعوبة الاستخدام أو ضعف التدريب'),O('missing',"Missing products or features we need",'عدم توفر منتجات أو مزايا نحتاجها'),O('integration','Weak integration with other systems','ضعف التكامل مع الأنظمة الأخرى'),O('switched','We moved to a system that suits our needs better','انتقلنا إلى نظام أنسب لاحتياجاتنا'),O('closed','The business closed or changed its model','توقف النشاط أو تغيّر نموذج العمل'),O('other','Other','أخرى',{other:true})]},
+{id:'satisfaction',sec:'s2',type:'scale',smin:1,smax:10,show:hist,
  q:{en:'Overall, how satisfied are you with Foodics?',ar:'بشكل عام، ما مدى رضاك عن فودكس؟'},
+ qf:function(a){return former(a)?{en:'Overall, how satisfied were you with Foodics?',ar:'بشكل عام، ما مدى رضاك عن فودكس عندما كنت تستخدمه؟'}:null},
  lo:{en:'Very bad',ar:'سيئ جداً'},hi:{en:'Excellent',ar:'ممتاز'}},
-{id:'products',sec:'s2',type:'multi',max:20,show:cust,
- q:{en:'Which Foodics products do you subscribe to?',ar:'ما منتجات فودكس المشترك بها؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+{id:'products',sec:'s2',type:'multi',max:20,show:hist,
+ q:{en:'Which Foodics products do you subscribe to?',ar:'ما منتجات فودكس المشترك بها؟'},
+ qf:function(a){return former(a)?{en:'Which Foodics products did you use?',ar:'ما منتجات فودكس التي كنت تستخدمها؟'}:null},
+ hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:PRODUCTS,cols:true},
-{id:'unhappy',sec:'s2',type:'items',show:function(a){return cust(a)&&haveProducts(a).length>0},
- q:{en:'Which products are you not fully satisfied with?',ar:'ما المنتجات التي لست راضياً عنها تماماً؟'},hint:{en:'Pick the product, then tell us why.',ar:'اختر المنتج ثم أخبرنا بالسبب.'}},
-{id:'priceValue',sec:'s2',type:'scale',smin:1,smax:5,labels:LABPRICE,show:cust,
- q:{en:"Do you think Foodics' prices are justified compared to the quality of what you get?",ar:'هل ترى أن أسعار فودكس مبررة مقارنةً بجودة ما تحصل عليه؟'}},
+{id:'unhappy',sec:'s2',type:'items',show:function(a){return hist(a)&&haveProducts(a).length>0},
+ q:{en:'Which products are you not fully satisfied with?',ar:'ما المنتجات التي لست راضياً عنها تماماً؟'},
+ qf:function(a){return former(a)?{en:'Which products were you not fully satisfied with?',ar:'ما المنتجات التي لم تكن راضياً عنها تماماً؟'}:null},
+ hint:{en:'Pick the product, then tell us why.',ar:'اختر المنتج ثم أخبرنا بالسبب.'}},
+{id:'priceValue',sec:'s2',type:'scale',smin:1,smax:5,labels:LABPRICE,show:hist,
+ q:{en:"Do you think Foodics' prices are justified compared to the quality of what you get?",ar:'هل ترى أن أسعار فودكس مبررة مقارنةً بجودة ما تحصل عليه؟'},
+ qf:function(a){return former(a)?{en:"Do you think Foodics' prices were justified compared to the quality of what you got?",ar:'هل ترى أن أسعار فودكس كانت مبررة مقارنةً بجودة ما حصلت عليه؟'}:null}},
 {id:'pricingPref',sec:'s2',type:'single',show:function(a){return !cust(a)},
  q:{en:'What do you prefer in terms of pricing?',ar:'ما الذي تفضّله من حيث طريقة التسعير؟'},
  opts:[O('annual','Full amount per year','السداد الكامل سنوياً'),O('installments','Installments','التقسيط'),O('bundle3','3-year bundle with a discount','باقة لثلاث سنوات بخصم'),O('other','Other','أخرى',{other:true})]},
 {id:'wanted',sec:'s2',type:'multi',max:3,
  q:{en:'Which product or service would you like Foodics to add?',ar:'ما المنتج أو الخدمة التي تتمنى أن تضيفها فودكس؟'},
- qf:function(a){return cust(a)?null:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'}},
+ qf:function(a){return cust(a)?null:(former(a)?{en:'Which product or service would you have liked Foodics to offer?',ar:'ما المنتج أو الخدمة التي كنت تتمنى أن تقدمها فودكس؟'}:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'})},
  hint:{en:'Choose up to 3',ar:'اختر حتى 3'},
  opts:[O('hr','HR','الموارد البشرية'),O('forecast','Demand forecasting','توقع الطلب'),O('procure','Supplier ordering and procurement','الطلب من الموردين والمشتريات'),O('marketing','Marketing services','خدمات التسويق'),O('reports','Deeper reports and benchmarks','تقارير ومقارنات أعمق'),O('other','Other','أخرى',{other:true})]},
 {id:'finInterest',sec:'s2',type:'scale',smin:1,smax:5,
@@ -418,6 +433,9 @@ var QUESTIONS = [
  qf:function(a){return cust(a)?null:{en:'Which system do you use today?',ar:'ما النظام الذي تستخدمه حالياً؟'}},
  opts:[O('none','No, only Foodics','لا، فودكس فقط'),O('yes','Yes, another provider','نعم، مزود آخر',{other:true,ph:{en:'Which provider?',ar:'اسم المزود'}})],
  optsf:function(a){return cust(a)?null:[O('none',"I don't use a system yet",'لا أستخدم نظاماً بعد'),O('yes','I use another provider','أستخدم مزوداً آخر',{other:true,ph:{en:'Which provider?',ar:'اسم المزود'}})]}},
+{id:'comeBack',sec:'s2',type:'single',show:former,
+ q:{en:'What is the most important factor that might bring you back to Foodics?',ar:'ما العامل الأهم الذي قد يدفعك للعودة إلى فودكس؟'},
+ opts:[O('pricing','More flexible pricing or plans','أسعار أو باقات أكثر مرونة'),O('onboarding','Better explanation and activation of products and features','شرح وتفعيل أفضل للمنتجات والمزايا'),O('training','Hands-on training for my team','تدريب عملي لفريقي'),O('support','Faster and more effective support','دعم فني أسرع وأكثر كفاءة'),O('stability','Higher system stability','استقرار أعلى للنظام'),O('features','Better features or integrations','مزايا أو تكاملات أفضل'),O('manager','Stronger account manager follow-up','متابعة أقوى من مدير الحساب'),O('none',"I'm not considering coming back",'لا أفكر حالياً في العودة'),O('other','Other','أخرى',{other:true})]},
 {id:'foodicsPayWhy',sec:'s2',type:'single',
  show:function(a){return cust(a)&&Array.isArray(a.products)&&a.products.length>0&&a.products.indexOf('pay')<0&&a.products.indexOf('notsure')<0},
  q:{en:"What's holding you back from Foodics Pay?",ar:'ما الذي يمنعك من استخدام Foodics Pay؟'},
@@ -497,7 +515,7 @@ function qText(q){ var alt = q.qf && q.qf(state.a); return L(alt||q.q); }
 function qOpts(q){ var alt = q.optsf && q.optsf(state.a); return alt||q.opts||[]; }
 function secLabel(sec){
   var S = UI[state.lang].sec;
-  if(sec==='s2') return cust(state.a)? S.s2c : S.s2n;
+  if(sec==='s2') return hist(state.a)? S.s2c : S.s2n;
   return S[sec];
 }
 function visibleQs(){ return QUESTIONS.filter(function(q){ return !q.show || q.show(state.a); }); }
@@ -670,7 +688,7 @@ function renderQ(){
         field('entity',ar?'اسم المنشأة':'Business name','text',c.entity,'organization')+
         field('email',ar?'البريد الإلكتروني':'Email','email',c.email,'email')+
         field('phone',ar?'رقم الجوال':'Phone','tel',c.phone,'tel')+
-        (cust(a)?field('account',ar?'رقم حساب فودكس (اختياري)':'Foodics account number (optional)','text',c.account,'off')+field('f5',ar?'معرّف F5 (اختياري)':'F5 ID (optional)','text',c.f5,'off'):'')+
+        (hist(a)?field('account',ar?'رقم حساب فودكس (اختياري)':'Foodics account number (optional)','text',c.account,'off')+field('f5',ar?'معرّف F5 (اختياري)':'F5 ID (optional)','text',c.f5,'off'):'')+
         '</div>';
     }
     html += '<input class="pot" type="text" id="pot" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">';
@@ -879,7 +897,7 @@ document.addEventListener('keydown',function(e){
     }
   }
   if(q.type==='scale' && /^[0-9]$/.test(e.key)){
-    var n = e.key==='0' ? 10 : parseInt(e.key,10);
+    var n = q.smin===0 ? parseInt(e.key,10) : (e.key==='0' ? 10 : parseInt(e.key,10));
     var el2 = screenEl.querySelector('[data-n="'+n+'"]'); if(el2){ el2.click(); }
   }
 });
@@ -896,8 +914,8 @@ function buildPayload(){
     if(c.entity.trim()) contact.entity=c.entity.trim();
     if(c.email.trim()) contact.email=c.email.trim();
     if(c.phone.trim()) contact.phone=c.phone.trim();
-    if(c.account.trim() && cust(a)) contact.foodics_account=c.account.trim();
-    if(c.f5.trim() && cust(a)) contact.f5_id=c.f5.trim();
+    if(c.account.trim() && hist(a)) contact.foodics_account=c.account.trim();
+    if(c.f5.trim() && hist(a)) contact.f5_id=c.f5.trim();
   }
   if(c.prefs.length) contact.prefs=c.prefs.slice();
   var src=''; try{ src = new URLSearchParams(location.search).get('src')||''; }catch(e){}

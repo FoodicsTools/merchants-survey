@@ -907,6 +907,7 @@ function buildPayload(){
   var V = visibleQs(), keep = {}, a = state.a, out = {};
   V.forEach(function(q){ keep[q.id]=1; keep[q.id+'_other']=1; keep[q.id+'_exact']=1; if(q.type==='items'){ keep.unhappy=1; keep.unhappy_all=1; keep.unhappy_note=1; } });
   Object.keys(a).forEach(function(k){ if(keep[k] && k!=='contact'){ var v=a[k]; if(v!==''&&v!=null) out[k]=v; } });
+  out._shown = V.map(function(q){ return q.id; }).filter(function(id){ return id!=='contact'; });   /* which questions this merchant was shown, so skips can be seen */
   var c = state.contact;
   var contact = {};
   if(c.prefs.indexOf('none')<0){

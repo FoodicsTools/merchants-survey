@@ -1,7 +1,7 @@
--- Foodics Market Insights Survey: database setup
--- Run this once in Supabase: SQL Editor > New query > paste > Run.
+-- Merchants survey schema. Ported from supabase/schema.sql (Supabase anon/RLS section replaced by
+-- plain roles: the app inserts as survey_writer, pgweb reads as survey_reader).
+-- Roles and their passwords are managed by migrate.js, not here.
 
--- 1. Table that stores one row per submitted survey
 create table if not exists public.responses (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
@@ -18,18 +18,6 @@ create table if not exists public.responses (
   constraint contact_size     check (pg_column_size(contact) < 4000)
 );
 
--- 2. Security: visitors (the public "anon" key) may ONLY add rows. They can never read them.
-alter table public.responses enable row level security;
-
-drop policy if exists "survey visitors can submit" on public.responses;
-create policy "survey visitors can submit"
-  on public.responses for insert to anon
-  with check (consent = true);
-
-revoke all on public.responses from anon;
-grant insert on public.responses to anon;
-
--- 3. A readable, flat version of the data for you (one column per question).
 create or replace function public.jsonb_list(j jsonb) returns text
 language sql immutable as $$
   select case
@@ -91,5 +79,12 @@ select
   contact->>'email'               as contact_email,
   contact->>'phone'               as contact_phone,
   contact->>'foodics_account'     as foodics_account,
+  contact->>'f5_id'               as f5_id,
   jsonb_list(contact->'prefs')    as contact_preferences
 from public.responses;
+
+revoke all on public.responses, public.responses_flat from public;
+grant usage on schema public to survey_writer, survey_reader;
+grant insert on public.responses to survey_writer;
+grant select on public.responses, public.responses_flat to survey_reader;
+grant execute on function public.jsonb_list(jsonb) to survey_reader;

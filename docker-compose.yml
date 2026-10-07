@@ -1,0 +1,89 @@
+name: merchants-survey
+
+# Required in .env (passwords hex only: they are embedded in postgres:// URLs):
+#   POSTGRES_PASSWORD, SURVEY_WRITER_PASSWORD, SURVEY_READER_PASSWORD,
+#   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY
+# Optional: PUBLIC_HOSTNAME (Turnstile tokens must be issued for it), SUBMIT_RATE_LIMIT, APP_IMAGE, DATA_DIR
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: 10m, max-file: "5" }
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: survey_admin
+      POSTGRES_DB: survey
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ${DATA_DIR:-.}/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U survey_admin -d survey"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [db]
+    logging: *logging
+
+  migrate:
+    image: ${APP_IMAGE:-merchants-survey:local}
+    build: .
+    command: ["node", "migrations/migrate.js"]
+    restart: "no"
+    environment:
+      MIGRATE_DATABASE_URL: postgres://survey_admin:${POSTGRES_PASSWORD:?}@postgres:5432/survey
+      SURVEY_WRITER_PASSWORD: ${SURVEY_WRITER_PASSWORD:?}
+      SURVEY_READER_PASSWORD: ${SURVEY_READER_PASSWORD:?}
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [db]
+    logging: *logging
+
+  app:
+    image: ${APP_IMAGE:-merchants-survey:local}
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://survey_writer:${SURVEY_WRITER_PASSWORD:?}@postgres:5432/survey
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:?}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:?}
+      TURNSTILE_DISABLED: ${TURNSTILE_DISABLED:-}
+      PUBLIC_HOSTNAME: ${PUBLIC_HOSTNAME:-}
+      SUBMIT_RATE_LIMIT: ${SUBMIT_RATE_LIMIT:-10}
+    ports:
+      - "127.0.0.1:8080:8080" # only cloudflared on the host reaches this
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    networks: [db, edge] # edge: outbound to Cloudflare Turnstile
+    logging: *logging
+
+  # Web SQL client for the developer. Read-only role, locked to this database, no SSH tunnels.
+  # Reachable only through the tunnel hostname that Cloudflare Access protects.
+  pgweb:
+    image: sosedoff/pgweb:0.17.0
+    restart: unless-stopped
+    command: ["pgweb", "--bind=0.0.0.0", "--listen=8081", "--readonly", "--lock-session", "--no-ssh", "--skip-open"]
+    environment:
+      DATABASE_URL: postgres://survey_reader:${SURVEY_READER_PASSWORD:?}@postgres:5432/survey?sslmode=disable
+    ports:
+      - "127.0.0.1:8081:8081"
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    networks: [db, edge] # edge is needed only so the port can be published
+    logging: *logging
+
+networks:
+  db:
+    internal: true # Postgres has no route out
+  edge: {}

@@ -205,6 +205,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
   .btn{padding:14px 22px}
   .tools .tl{display:none}
 }
+.ts-box{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:30}
+.ts-box:empty{display:none}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;transition-duration:.001ms!important}
 }
@@ -216,7 +218,7 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 
 <header class="top">
   <a class="logo" href="#" aria-label="Foodics">
-    <img src="assets/foodics-logo.svg" alt="Foodics" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+    <img src="assets/foodics-logo.svg" alt="Foodics" id="logoImg">
     <span class="wordmark" hidden>FOODICS</span>
   </a>
   <div class="tools">
@@ -230,6 +232,7 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
   <noscript><p>This survey needs JavaScript to run.</p></noscript>
 </main>
 
+<div class="ts-box" id="tsBox"></div>
 <footer class="dock" id="dock" hidden>
   <div class="dock-in">
     <button type="button" class="btn ghost round" id="backBtn" aria-label="Back"><svg class="ico flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
@@ -239,13 +242,14 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 </footer>
 
 <script src="config.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <script>
 (function(){
 'use strict';
 
 /* ---------- Configuration ---------- */
-var CFG = Object.assign({SUPABASE_URL:'',SUPABASE_ANON_KEY:'',TABLE:'responses'}, window.SURVEY_CONFIG||{});
-var CONFIGURED = /^https:\/\/[^\s]+\.supabase\.co/i.test(CFG.SUPABASE_URL) && String(CFG.SUPABASE_ANON_KEY).length > 20;
+var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
+var CONFIGURED = !!CFG.SUBMIT_URL;
 var STORE_KEY = 'foodics_mi_survey_v2';
 var VERSION = 'v2';
 
@@ -281,7 +285,7 @@ var UI = {
   sendFail:"We couldn't send your answers. Check your connection and try again. Your answers are still here.",
   thanks:'Thank you!', thanksText:'Your answers are in. They will help shape the Market Insights Report and what Foodics builds next.',
   thanksReport:"We'll send you the report when it's published.", share:'Know another business owner? Copy the survey link', copied:'Link copied',
-  previewNote:'Preview mode: answers are not saved. Add your Supabase keys in config.js to start collecting responses.', previewData:'What would have been sent',
+  previewNote:'Preview mode: answers are not saved. Set SUBMIT_URL in config.js to start collecting responses.', previewData:'What would have been sent',
   noteOpt:'Anything you would like to add? (optional)',
   exactPh:'Exact number (optional)',
   answerFirst:'Please answer to continue',
@@ -309,7 +313,7 @@ var UI = {
   sendFail:'تعذّر إرسال إجاباتك. تحقق من الاتصال وحاول مرة أخرى. إجاباتك محفوظة هنا.',
   thanks:'شكراً لك!', thanksText:'وصلت إجاباتك. ستساهم في دراسة رؤى السوق وفي ما ستبنيه فودكس لاحقاً.',
   thanksReport:'سنرسل لك التقرير فور نشره.', share:'تعرف صاحب نشاط آخر؟ انسخ رابط الاستطلاع', copied:'تم نسخ الرابط',
-  previewNote:'Preview mode: answers are not saved. Add your Supabase keys in config.js to start collecting responses.', previewData:'What would have been sent',
+  previewNote:'Preview mode: answers are not saved. Set SUBMIT_URL in config.js to start collecting responses.', previewData:'What would have been sent',
   noteOpt:'هل تود إضافة شيء؟ (اختياري)',
   exactPh:'العدد الدقيق (اختياري)',
   answerFirst:'يرجى الإجابة للمتابعة',
@@ -946,12 +950,36 @@ function submit(){
   };
   if(isBot){ finish(); return; }
   if(!CONFIGURED){ setTimeout(finish,600); return; }
-  var headers = {'Content-Type':'application/json','apikey':CFG.SUPABASE_ANON_KEY,'Prefer':'return=minimal'};
-  if(String(CFG.SUPABASE_ANON_KEY).indexOf('eyJ')===0) headers['Authorization']='Bearer '+CFG.SUPABASE_ANON_KEY;
-  fetch(CFG.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/'+CFG.TABLE,{method:'POST',headers:headers,body:JSON.stringify(payload)})
-   .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); finish(); })
-   .catch(function(err){ console.error('Submit failed',err); state.sending=false; state.submitError=true; renderQ(); chrome(); });
+  var fail = function(err){ console.error('Submit failed',err); resetTurnstile(); state.sending=false; state.submitError=true; renderQ(); chrome(); };
+  turnstileToken().then(function(token){
+    return fetch(CFG.SUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,response:payload})});
+  }).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); resetTurnstile(); finish(); })
+   .catch(fail);
 }
+/* Cloudflare Turnstile: rendered once outside #screen (repaints would destroy it) and only run on submit.
+   'interaction-only' keeps it invisible unless Cloudflare needs the visitor to click. */
+var ts = {id:null, pending:null};
+function turnstileToken(){
+  if(!CFG.TURNSTILE_SITE_KEY) return Promise.resolve('');
+  return new Promise(function(resolve,reject){
+    var tries=0;
+    (function wait(){
+      if(!window.turnstile){ if(++tries>50) return reject(new Error('Turnstile did not load')); return setTimeout(wait,200); }
+      ts.pending = {resolve:resolve,reject:reject};
+      if(ts.id===null){
+        ts.id = window.turnstile.render('#tsBox',{
+          sitekey:CFG.TURNSTILE_SITE_KEY, execution:'execute', appearance:'interaction-only',
+          language: state.lang==='ar'?'ar':'en', action:'submit',
+          callback:function(t){ var p=ts.pending; ts.pending=null; if(p) p.resolve(t); },
+          'error-callback':function(){ var p=ts.pending; ts.pending=null; if(p) p.reject(new Error('Turnstile error')); return true; },
+          'expired-callback':function(){ window.turnstile.reset(ts.id); }
+        });
+      }
+      window.turnstile.execute('#tsBox');
+    })();
+  });
+}
+function resetTurnstile(){ try{ if(ts.id!==null && window.turnstile) window.turnstile.reset(ts.id); }catch(e){} }
 function copyLink(btn){
   var url = location.href.split('#')[0].split('?')[0];
   var done = function(){ var old=btn.textContent; btn.textContent=u('copied'); setTimeout(function(){btn.textContent=old},1800); };
@@ -959,6 +987,8 @@ function copyLink(btn){
 }
 
 /* ---------- Boot ---------- */
+var logo=$('#logoImg'); if(logo) logo.addEventListener('error',function(){ logo.hidden=true; logo.nextElementSibling.hidden=false; });
+if(logo && logo.complete && !logo.naturalWidth){ logo.hidden=true; logo.nextElementSibling.hidden=false; }
 load();
 render('none');
 window.__survey = {state:state,visibleQs:visibleQs,QUESTIONS:QUESTIONS,buildPayload:buildPayload,

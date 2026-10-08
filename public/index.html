@@ -250,8 +250,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v2';
-var VERSION = 'v2';
+var STORE_KEY = 'foodics_mi_survey_v3';
+var VERSION = 'v3';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -350,9 +350,11 @@ var REASONS = [
 /* ---------- Questions ---------- */
 var cust = function(a){return a.isCustomer==='yes'};
 var former = function(a){return a.isCustomer==='former'};
+var never = function(a){return a.isCustomer==='no'};
 var hist = function(a){return a.isCustomer==='yes'||a.isCustomer==='former'};   /* uses or used Foodics */
 var haveProducts = function(a){return Array.isArray(a.products)?a.products.filter(function(p){return p!=='notsure'}):[]};
 var LAB5 = [{en:'Very dissatisfied',ar:'غير راضٍ إطلاقاً'},{en:'Dissatisfied',ar:'غير راضٍ'},{en:'Neutral',ar:'محايد'},{en:'Satisfied',ar:'راضٍ'},{en:'Very satisfied',ar:'راضٍ جداً'}];
+var LABSERVICE = [{en:'Very poor',ar:'سيئة جداً'},{en:'Poor',ar:'سيئة'},{en:'Okay',ar:'مقبولة'},{en:'Good',ar:'جيدة'},{en:'Excellent',ar:'ممتازة'}];
 var LABPRICE = [{en:'Not justified at all',ar:'غير مبررة إطلاقاً'},{en:'Not very justified',ar:'غير مبررة إلى حد كبير'},{en:'Neutral',ar:'محايد'},{en:'Mostly justified',ar:'مبررة إلى حد كبير'},{en:'Fully justified',ar:'مبررة تماماً'}];
 
 /* Order of sections: Introduction (s1), Market insights (s4), Foodics experience (s2), Challenges and needs (s3), Stay in touch (s5) */
@@ -361,6 +363,10 @@ var QUESTIONS = [
 {id:'isCustomer',sec:'s1',type:'single',req:true,
  q:{en:'Are you a Foodics customer?',ar:'هل أنت عميل لدى فودكس؟'},
  opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (لم أعد عميلاً لديهم)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
+{id:'f5Id',sec:'s1',type:'textopt',show:cust,maxlen:40,
+ q:{en:'What is your F5 ID?',ar:'ما هو معرّف F5 الخاص بك؟'},
+ hint:{en:'(We may already know some details about your business through your F5 ID. We still ask the next questions so we can double-check them and make sure we have the full picture.)',ar:'(قد تتوفر لدينا بعض المعلومات عن نشاطك عبر معرّف F5، ومع ذلك نطرح عليك الأسئلة التالية للتأكد منها وللحصول على الصورة الكاملة.)'},
+ ph:{en:'F5 ID',ar:'معرّف F5'},skip:{en:"I don't know it",ar:'لا أعرفه'}},
 {id:'position',sec:'s1',type:'single',req:true,
  q:{en:"What's your position?",ar:'ما هو منصبك؟'},
  opts:[O('owner','Owner / founder','مالك / مؤسس'),O('gm','General manager / operations','مدير عام / عمليات'),O('finance','Finance','المالية'),O('it','IT / technology','التقنية'),O('marketing','Marketing','التسويق'),O('other','Other','أخرى',{other:true})]},
@@ -393,6 +399,13 @@ var QUESTIONS = [
 {id:'techSpend',sec:'s4',type:'single',
  q:{en:'Over the next 12 months, your spending on technology will…',ar:'خلال الأشهر الـ 12 القادمة، سيكون إنفاقك على التقنية…'},
  opts:[O('up','Increase','أعلى'),O('same','Stay the same','كما هو'),O('down','Decrease','أقل')]},
+{id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:12,
+ q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in SAR?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، بالريال السعودي؟'},
+ hint:{en:'A rough estimate is fine. Type the amount in numbers.',ar:'يكفي تقدير تقريبي. اكتب المبلغ بالأرقام.'},
+ ph:{en:'Amount in SAR, e.g. 25000',ar:'المبلغ بالريال، مثال: 25000'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+{id:'saasSpendOn',sec:'s4',type:'multi',max:20,
+ q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
+ opts:[O('accounting','Accounting and e-invoicing (ZATCA)','المحاسبة والفوترة الإلكترونية (هيئة الزكاة)'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
 {id:'aiUse',sec:'s4',type:'multi',max:9,
  q:{en:'Where do you use AI in your business today?',ar:'أين تستخدم الذكاء الاصطناعي في نشاطك حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('marketing','Marketing content','محتوى التسويق'),O('guests','Replying to guests','الرد على الضيوف'),O('forecast','Forecasting and ordering','التوقعات والطلب'),O('accounting','Accounting','المحاسبة'),O('menu','Menu and pricing','القائمة والتسعير'),O('other','Other tools','أدوات أخرى',{other:true}),O('none',"I don't use AI yet",'لا أستخدمه بعد',{exclusive:true}),O('want',"I'd like to, but don't know where to start",'أرغب بذلك لكن لا أعرف من أين أبدأ',{exclusive:true})]},
@@ -419,12 +432,26 @@ var QUESTIONS = [
  q:{en:'Which products are you not fully satisfied with?',ar:'ما المنتجات التي لست راضياً عنها تماماً؟'},
  qf:function(a){return former(a)?{en:'Which products were you not fully satisfied with?',ar:'ما المنتجات التي لم تكن راضياً عنها تماماً؟'}:null},
  hint:{en:'Pick the product, then tell us why.',ar:'اختر المنتج ثم أخبرنا بالسبب.'}},
+{id:'afterSales',sec:'s2',type:'scale',smin:1,smax:5,labels:LABSERVICE,show:hist,
+ q:{en:"How would you rate Foodics' after-sales service?",ar:'كيف تقيّم خدمة ما بعد البيع من فودكس؟'},
+ qf:function(a){return former(a)?{en:"How did you rate Foodics' after-sales service?",ar:'كيف كنت تقيّم خدمة ما بعد البيع من فودكس؟'}:null}},
 {id:'priceValue',sec:'s2',type:'scale',smin:1,smax:5,labels:LABPRICE,show:hist,
  q:{en:"Do you think Foodics' prices are justified compared to the quality of what you get?",ar:'هل ترى أن أسعار فودكس مبررة مقارنةً بجودة ما تحصل عليه؟'},
  qf:function(a){return former(a)?{en:"Do you think Foodics' prices were justified compared to the quality of what you got?",ar:'هل ترى أن أسعار فودكس كانت مبررة مقارنةً بجودة ما حصلت عليه؟'}:null}},
-{id:'pricingPref',sec:'s2',type:'single',show:function(a){return !cust(a)||Number(a.priceValue)<=2},
- q:{en:'What do you prefer in terms of pricing?',ar:'ما الذي تفضّله من حيث طريقة التسعير؟'},
- opts:[O('annual','Full amount per year','السداد الكامل سنوياً'),O('installments','Installments','التقسيط'),O('bundle3','3-year bundle with a discount','باقة لثلاث سنوات بخصم'),O('lower','A lower price','تخفيض السعر'),O('other','Other','أخرى',{other:true})]},
+{id:'priceWhy',sec:'s2',type:'multi',max:9,show:function(a){return hist(a)&&Number(a.priceValue)<=3},
+ q:{en:'What makes the price feel less than fully justified?',ar:'ما الذي يجعل السعر يبدو غير مبرر بالكامل؟'},
+ qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعل السعر يبدو غير مبرر بالكامل؟'}:null},
+ hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('onboarding','Onboarding','التأهيل والتشغيل الأولي'),O('other','Other','أخرى',{other:true})]},
+{id:'priceView',sec:'s2',type:'single',show:never,
+ q:{en:"From what you know or have heard, how does Foodics' price compare with the value it offers?",ar:'من خلال ما تعرفه أو سمعته، كيف ترى سعر فودكس مقارنةً بالقيمة التي تقدمها؟'},
+ opts:[O('good','Good value for the price','قيمة جيدة مقابل السعر'),O('same','About the same as other providers','مماثل لمزودين آخرين تقريباً'),O('higher',"Price is higher than the value I'd expect",'السعر أعلى من القيمة التي أتوقعها'),O('cheaper','Other providers give me what I need for less','مزودون آخرون يقدمون ما أحتاجه بسعر أقل'),O('unsure',"I don't know Foodics well enough to say",'لا أعرف فودكس بما يكفي للحكم')]},
+{id:'priceViewWhy',sec:'s2',type:'multi',max:9,show:function(a){return never(a)&&(a.priceView==='higher'||a.priceView==='cheaper')},
+ q:{en:'What gives you that impression?',ar:'ما الذي يعطيك هذا الانطباع؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('price','The price itself','السعر نفسه'),O('products','What I have heard about the products','ما سمعته عن المنتجات'),O('support','What I have heard about the support','ما سمعته عن الدعم الفني'),O('offers','Offers from other providers','عروض مزودين آخرين'),O('merchants','What other merchants say','ما يقوله تجار آخرون'),O('other','Other','أخرى',{other:true})]},
+{id:'pricingPref',sec:'s2',type:'single',show:function(a){return !cust(a)||Number(a.priceValue)<=3},
+ q:{en:'How would you prefer to pay for your POS subscription?',ar:'كيف تفضّل سداد اشتراك نقاط البيع؟'},
+ opts:[O('annual','Full amount per year','السداد الكامل سنوياً'),O('installments','Installments','التقسيط'),O('monthly','Monthly installments','أقساط شهرية'),O('bundle3','3-year bundle with a discount','باقة لثلاث سنوات بخصم'),O('other','Other','أخرى',{other:true})]},
 {id:'wanted',sec:'s2',type:'multi',max:3,
  q:{en:'Which product or service would you like Foodics to add?',ar:'ما المنتج أو الخدمة التي تتمنى أن تضيفها فودكس؟'},
  qf:function(a){return cust(a)?null:(former(a)?{en:'Which product or service would you have liked Foodics to offer?',ar:'ما المنتج أو الخدمة التي كنت تتمنى أن تقدمها فودكس؟'}:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'})},
@@ -487,7 +514,7 @@ var CONTACT_PREFS = [
  O('report',"Send me the report when it's published",'أرسلوا لي التقرير عند نشره'),
  O('none',"Please don't contact me",'لا أرغب في أن يتم التواصل معي')
 ];
-var WEIGHT = {single:6,scale:6,multi:10,items:16,text:24,contact:22};
+var WEIGHT = {single:6,scale:6,multi:10,items:16,text:24,textopt:10,contact:22};
 
 /* ---------- State ---------- */
 var state = {
@@ -537,6 +564,7 @@ function hasAnswer(q){
     case 'multi': return Array.isArray(v) && v.length>0;
     case 'scale': return typeof v==='number';
     case 'text': return !!(v && String(v).trim());
+    case 'textopt': return !!(v && String(v).trim());
     case 'items': return !!a.unhappy_all || (a.unhappy && Object.keys(a.unhappy).length>0);
     case 'contact': return true;
   }
@@ -667,6 +695,11 @@ function renderQ(){
   else if(q.type==='text'){
     html += '<textarea class="inp" id="txt" maxlength="400" rows="3" placeholder="'+esc(u('typeHere'))+'">'+esc(a[q.id]||'')+'</textarea>';
   }
+  else if(q.type==='textopt'){
+    var tv = a[q.id]==='__skip' ? '' : (a[q.id]||'');
+    html += '<input class="inp" id="ti" type="text" maxlength="'+(q.maxlen||60)+'"'+(q.numeric?' inputmode="numeric" dir="ltr"':'')+' autocomplete="off" placeholder="'+esc(L(q.ph)||u('typeHere'))+'" value="'+esc(tv)+'">';
+    html += '<div class="opts" style="margin-top:14px" role="group">'+optHtml({v:'__skip',l:q.skip},0,a[q.id]==='__skip','checkbox',' data-skip="1"')+'</div>';
+  }
   else if(q.type==='items'){
     var picks = a.unhappy||{}, prods = PRODUCTS.filter(function(p){return haveProducts(a).indexOf(p.v)>=0});
     html += '<div class="irs">';
@@ -696,7 +729,6 @@ function renderQ(){
         field('entity',ar?'اسم المنشأة':'Business name','text',c.entity,'organization')+
         field('email',ar?'البريد الإلكتروني':'Email','email',c.email,'email')+
         field('phone',ar?'رقم الجوال':'Phone','tel',c.phone,'tel')+
-        (hist(a)?field('account',ar?'رقم حساب فودكس (اختياري)':'Foodics account number (optional)','text',c.account,'off')+field('f5',ar?'معرّف F5 (اختياري)':'F5 ID (optional)','text',c.f5,'off'):'')+
         '</div>';
     }
     html += '<input class="pot" type="text" id="pot" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">';
@@ -777,7 +809,7 @@ function back(){
 }
 function focusStage(){
   var q=curQ(); if(!q) return;
-  var t = q.type==='text' ? $('#txt') : null;
+  var t = q.type==='text' ? $('#txt') : (q.type==='textopt' ? $('#ti') : null);
   var el = t || $('#qh');
   if(el) setTimeout(function(){ try{ el.focus({preventScroll:true}); }catch(e){} }, 60);
   window.scrollTo({top:0,behavior:'auto'});
@@ -832,6 +864,11 @@ screenEl.addEventListener('click',function(e){
     repaint('[data-n="'+b.dataset.n+'"]');
     scheduleAdvance();
   }
+  else if(q.type==='textopt' && b.dataset.skip){
+    if(state.a[q.id]==='__skip') delete state.a[q.id]; else state.a[q.id]='__skip';
+    repaint('[data-skip="1"]');
+    if(state.a[q.id]==='__skip') scheduleAdvance();
+  }
   else if(q.type==='items'){
     var a = state.a;
     if(b.dataset.all){
@@ -872,6 +909,13 @@ screenEl.addEventListener('input',function(e){
     updateDock(); save();
   }
   else if(t.id==='txt'){ state.a[q.id]=t.value; updateDock(); save(); }
+  else if(t.id==='ti'){
+    var tv2 = t.value;
+    if(q.numeric){ tv2 = tv2.replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[\u06F0-\u06F9]/g,function(d){return String(d.charCodeAt(0)-1776)}).replace(/\D/g,''); if(tv2!==t.value) t.value=tv2; }
+    if(tv2.trim()) state.a[q.id]=tv2; else delete state.a[q.id];
+    Array.prototype.forEach.call(screenEl.querySelectorAll('.opt[data-skip]'),function(el){ el.setAttribute('aria-checked','false'); });
+    updateDock(); save();
+  }
   else if(t.id==='note'){ state.a.unhappy_note=t.value; save(); }
   else if(t.dataset && t.dataset.f){
     state.contact[t.dataset.f]=t.value; updateDock();
@@ -924,8 +968,6 @@ function buildPayload(){
     if(c.entity.trim()) contact.entity=c.entity.trim();
     if(c.email.trim()) contact.email=c.email.trim();
     if(c.phone.trim()) contact.phone=c.phone.trim();
-    if(c.account.trim() && hist(a)) contact.foodics_account=c.account.trim();
-    if(c.f5.trim() && hist(a)) contact.f5_id=c.f5.trim();
   }
   if(c.prefs.length) contact.prefs=c.prefs.slice();
   var src=''; try{ src = new URLSearchParams(location.search).get('src')||''; }catch(e){}

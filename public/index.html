@@ -250,8 +250,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v5';
-var VERSION = 'v5';
+var STORE_KEY = 'foodics_mi_survey_v6';
+var VERSION = 'v6';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -402,7 +402,7 @@ var QUESTIONS = [
 {id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:12,
  q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in SAR?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، بالريال السعودي؟'},
  hint:{en:'A rough estimate is fine. Type the amount in numbers.',ar:'يكفي تقدير تقريبي. اكتب المبلغ بالأرقام.'},
- ph:{en:'Amount in SAR, e.g. 25000',ar:'المبلغ بالريال، مثال: 25000'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ ph:{en:'Amount, e.g. 25000',ar:'المبلغ، مثال: 25000'},unit:{en:'SAR',ar:'ر.س'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'saasSpendOn',sec:'s4',type:'multi',max:20,
  q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
  opts:[O('accounting','Accounting and e-invoicing (ZATCA)','المحاسبة والفوترة الإلكترونية (هيئة الزكاة)'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
@@ -442,13 +442,17 @@ var QUESTIONS = [
  q:{en:'What makes the price feel less than fully justified?',ar:'ما الذي يجعل السعر يبدو غير مبرر بالكامل؟'},
  qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعل السعر يبدو غير مبرر بالكامل؟'}:null},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('onboarding','Onboarding','التأهيل والتشغيل الأولي'),O('other','Other','أخرى',{other:true})]},
+ opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','التوصيل والتركيب'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})]},
 {id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:12,
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0},
- q:{en:'What price would you be willing to pay for your POS subscription yearly?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع؟'},
- qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع؟'}:null},
+ q:{en:'What price would you be willing to pay for your POS subscription yearly (in SAR)?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع (بالريال السعودي)؟'},
+ qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly (in SAR)?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع (بالريال السعودي)؟'}:null},
  hint:{en:'Type the amount in SAR per year. A rough figure is fine.',ar:'اكتب المبلغ بالريال السعودي في السنة. يكفي رقم تقريبي.'},
- ph:{en:'Amount in SAR, e.g. 5000',ar:'المبلغ بالريال، مثال: 5000'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ ph:{en:'Amount, e.g. 5000',ar:'المبلغ، مثال: 5000'},unit:{en:'SAR',ar:'ر.س'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+{id:'priceAcceptableWhy',sec:'s2',type:'text',
+ show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0&&/^\d+$/.test(String(a.priceAcceptable||''))},
+ q:{en:'Why did you choose this price?',ar:'لماذا اخترت هذا السعر؟'},
+ hint:{en:'Tell us in a sentence or two what is behind this number.',ar:'اشرح لنا في جملة أو جملتين السبب وراء هذا الرقم.'}},
 {id:'priceView',sec:'s2',type:'single',show:never,
  q:{en:"From what you know or have heard, how does Foodics' price compare with the value it offers?",ar:'من خلال ما تعرفه أو سمعته، كيف ترى سعر فودكس مقارنةً بالقيمة التي تقدمها؟'},
  opts:[O('good','Good value for the price','قيمة جيدة مقابل السعر'),O('same','About the same as other providers','مماثل لمزودين آخرين تقريباً'),O('higher',"Price is higher than the value I'd expect",'السعر أعلى من القيمة التي أتوقعها'),O('cheaper','Other providers give me what I need for less','مزودون آخرون يقدمون ما أحتاجه بسعر أقل'),O('unsure',"I don't know Foodics well enough to say",'لا أعرف فودكس بما يكفي للحكم')]},
@@ -703,7 +707,8 @@ function renderQ(){
   }
   else if(q.type==='textopt'){
     var tv = a[q.id]==='__skip' ? '' : (a[q.id]||'');
-    html += '<input class="inp" id="ti" type="text" maxlength="'+(q.maxlen||60)+'"'+(q.numeric?' inputmode="numeric" dir="ltr"':'')+' autocomplete="off" placeholder="'+esc(L(q.ph)||u('typeHere'))+'" value="'+esc(tv)+'">';
+    var tin = '<input class="inp" id="ti" type="text" maxlength="'+(q.maxlen||60)+'"'+(q.numeric?' inputmode="numeric" dir="ltr"':'')+' autocomplete="off" placeholder="'+esc(L(q.ph)||u('typeHere'))+'" value="'+esc(tv)+'">';
+    html += q.unit ? '<div style="display:flex;align-items:center;gap:12px">'+tin.replace('class="inp"','class="inp" style="flex:1"')+'<strong style="font-size:1.05rem;letter-spacing:.04em">'+esc(L(q.unit))+'</strong></div>' : tin;
     html += '<div class="opts" style="margin-top:14px" role="group">'+optHtml({v:'__skip',l:q.skip},0,a[q.id]==='__skip','checkbox',' data-skip="1"')+'</div>';
   }
   else if(q.type==='items'){

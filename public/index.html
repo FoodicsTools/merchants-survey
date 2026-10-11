@@ -250,8 +250,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v6';
-var VERSION = 'v6';
+var STORE_KEY = 'foodics_mi_survey_v7';
+var VERSION = 'v7';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -357,10 +357,36 @@ var LAB5 = [{en:'Very dissatisfied',ar:'غير راضٍ إطلاقاً'},{en:'Di
 var LABSERVICE = [{en:'Very poor',ar:'سيئة جداً'},{en:'Poor',ar:'سيئة'},{en:'Okay',ar:'مقبولة'},{en:'Good',ar:'جيدة'},{en:'Excellent',ar:'ممتازة'}];
 var LABPRICE = [{en:'Not justified at all',ar:'غير مبررة إطلاقاً'},{en:'Not very justified',ar:'غير مبررة إلى حد كبير'},{en:'Neutral',ar:'محايد'},{en:'Mostly justified',ar:'مبررة إلى حد كبير'},{en:'Fully justified',ar:'مبررة تماماً'}];
 
+/* ---------- Countries and currencies ---------- */
+var COUNTRIES = {
+ ksa:{en:'Saudi Arabia',ar:'المملكة العربية السعودية',cur:'SAR',curAr:'بالريال السعودي',chipAr:'ر.س'},
+ oman:{en:'Oman',ar:'سلطنة عُمان',cur:'OMR',curAr:'بالريال العماني',chipAr:'ر.ع'},
+ jordan:{en:'Jordan',ar:'الأردن',cur:'JOD',curAr:'بالدينار الأردني',chipAr:'د.أ'},
+ uae:{en:'United Arab Emirates',ar:'الإمارات العربية المتحدة',cur:'AED',curAr:'بالدرهم الإماراتي',chipAr:'د.إ'},
+ bahrain:{en:'Bahrain',ar:'البحرين',cur:'BHD',curAr:'بالدينار البحريني',chipAr:'د.ب'},
+ kuwait:{en:'Kuwait',ar:'الكويت',cur:'KWD',curAr:'بالدينار الكويتي',chipAr:'د.ك'},
+ egypt:{en:'Egypt',ar:'مصر',cur:'EGP',curAr:'بالجنيه المصري',chipAr:'ج.م'}
+};
+var COUNTRY_ALIASES = {sa:'ksa',saudi:'ksa',om:'oman',jo:'jordan',ae:'uae',bh:'bahrain',kw:'kuwait',eg:'egypt'};
+/* the link decides the country: https://survey.foodics.com/?country=oman&src=whatsapp. Without it, the survey asks. */
+var URL_COUNTRY = (function(){ try{ var c=(new URLSearchParams(location.search).get('country')||'').trim().toLowerCase(); c = COUNTRY_ALIASES[c]||c; return COUNTRIES[c] ? c : ''; }catch(e){ return ''; } })();
+function curCountry(){ return URL_COUNTRY || (state && state.a && state.a.country) || ''; }
+function curCode(){ var c=curCountry(); return COUNTRIES[c] ? COUNTRIES[c].cur : (c==='other' ? 'LOCAL' : ''); }
+/* tokens in texts: {CUR} currency, {CHIP} short currency label, {ZATCA} Saudi-only wording */
+function fill(s){
+  if(typeof s!=='string' || s.indexOf('{')<0) return s;
+  var c=curCountry(), info=COUNTRIES[c], ar=state && state.lang==='ar';
+  var cur = info ? (ar?info.curAr:info.cur) : (c==='other' ? (ar?'بعملتك المحلية':'your local currency') : (ar?COUNTRIES.ksa.curAr:'SAR'));
+  var chip = info ? (ar?info.chipAr:info.cur) : (c==='other' ? (ar?'العملة المحلية':'local currency') : (ar?COUNTRIES.ksa.chipAr:'SAR'));
+  var zatca = (!c || c==='ksa') ? (ar?' (هيئة الزكاة)':' (ZATCA)') : '';
+  return s.split('{CUR}').join(cur).split('{CHIP}').join(chip).split('{ZATCA}').join(zatca);
+}
 /* Order of sections: Introduction (s1), Market insights (s4), Foodics experience (s2), Challenges and needs (s3), Stay in touch (s5) */
 var QUESTIONS = [
 /* Introduction */
-{id:'isCustomer',sec:'s1',type:'single',req:true,
+{id:'country',sec:'s1',type:'single',req:true,show:function(){return !URL_COUNTRY},
+ q:{en:'Which country is your business in?',ar:'في أي دولة يقع نشاطك؟'},
+ opts:[O('ksa','Saudi Arabia','المملكة العربية السعودية'),O('oman','Oman','سلطنة عُمان'),O('jordan','Jordan','الأردن'),O('uae','United Arab Emirates','الإمارات العربية المتحدة'),O('bahrain','Bahrain','البحرين'),O('kuwait','Kuwait','الكويت'),O('egypt','Egypt','مصر'),O('other','Other country','دولة أخرى',{other:true,ph:{en:'Which country?',ar:'اسم الدولة'}})]},{id:'isCustomer',sec:'s1',type:'single',req:true,
  q:{en:'Are you a Foodics customer?',ar:'هل أنت عميل لدى فودكس؟'},
  opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (لم أعد عميلاً لديهم)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
 {id:'f5Id',sec:'s1',type:'textopt',show:cust,maxlen:40,
@@ -400,12 +426,12 @@ var QUESTIONS = [
  q:{en:'Over the next 12 months, your spending on technology will…',ar:'خلال الأشهر الـ 12 القادمة، سيكون إنفاقك على التقنية…'},
  opts:[O('up','Increase','أعلى'),O('same','Stay the same','كما هو'),O('down','Decrease','أقل')]},
 {id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:12,
- q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in SAR?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، بالريال السعودي؟'},
+ q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in {CUR}?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، {CUR}؟'},
  hint:{en:'A rough estimate is fine. Type the amount in numbers.',ar:'يكفي تقدير تقريبي. اكتب المبلغ بالأرقام.'},
- ph:{en:'Amount, e.g. 25000',ar:'المبلغ، مثال: 25000'},unit:{en:'SAR',ar:'ر.س'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ ph:{en:'Amount, e.g. 25000',ar:'المبلغ، مثال: 25000'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'saasSpendOn',sec:'s4',type:'multi',max:20,
  q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
- opts:[O('accounting','Accounting and e-invoicing (ZATCA)','المحاسبة والفوترة الإلكترونية (هيئة الزكاة)'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
+ opts:[O('accounting','Accounting and e-invoicing{ZATCA}','المحاسبة والفوترة الإلكترونية{ZATCA}'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
 {id:'aiUse',sec:'s4',type:'multi',max:9,
  q:{en:'Where do you use AI in your business today?',ar:'أين تستخدم الذكاء الاصطناعي في نشاطك حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('marketing','Marketing content','محتوى التسويق'),O('guests','Replying to guests','الرد على الضيوف'),O('forecast','Forecasting and ordering','التوقعات والطلب'),O('accounting','Accounting','المحاسبة'),O('menu','Menu and pricing','القائمة والتسعير'),O('other','Other tools','أدوات أخرى',{other:true}),O('none',"I don't use AI yet",'لا أستخدمه بعد',{exclusive:true}),O('want',"I'd like to, but don't know where to start",'أرغب بذلك لكن لا أعرف من أين أبدأ',{exclusive:true})]},
@@ -445,10 +471,10 @@ var QUESTIONS = [
  opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','التوصيل والتركيب'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})]},
 {id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:12,
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0},
- q:{en:'What price would you be willing to pay for your POS subscription yearly (in SAR)?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع (بالريال السعودي)؟'},
- qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly (in SAR)?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع (بالريال السعودي)؟'}:null},
- hint:{en:'Type the amount in SAR per year. A rough figure is fine.',ar:'اكتب المبلغ بالريال السعودي في السنة. يكفي رقم تقريبي.'},
- ph:{en:'Amount, e.g. 5000',ar:'المبلغ، مثال: 5000'},unit:{en:'SAR',ar:'ر.س'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ q:{en:'What price would you be willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'},
+ qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'}:null},
+ hint:{en:'Type the amount in {CUR} per year. A rough figure is fine.',ar:'اكتب المبلغ {CUR} في السنة. يكفي رقم تقريبي.'},
+ ph:{en:'Amount, e.g. 5000',ar:'المبلغ، مثال: 5000'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'priceAcceptableWhy',sec:'s2',type:'text',
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0&&/^\d+$/.test(String(a.priceAcceptable||''))},
  q:{en:'Why did you choose this price?',ar:'لماذا اخترت هذا السعر؟'},
@@ -555,7 +581,7 @@ function u(k,vars){
   if(vars) Object.keys(vars).forEach(function(v){ s = s.replace('{'+v+'}', vars[v]); });
   return s;
 }
-function L(o){ return o==null ? '' : (typeof o==='string' ? o : (o[state.lang]||o.en)); }
+function L(o){ return fill(o==null ? '' : (typeof o==='string' ? o : (o[state.lang]||o.en))); }
 function qText(q){ var alt = q.qf && q.qf(state.a); return L(alt||q.q); }
 function qOpts(q){ var alt = q.optsf && q.optsf(state.a); return alt||q.opts||[]; }
 function secLabel(sec){
@@ -981,7 +1007,9 @@ function buildPayload(){
     if(c.phone.trim()) contact.phone=c.phone.trim();
   }
   if(c.prefs.length) contact.prefs=c.prefs.slice();
-  var src=''; try{ src = new URLSearchParams(location.search).get('src')||''; }catch(e){}
+  var src=''; try{ src = (new URLSearchParams(location.search).get('src')||'').trim().toLowerCase(); }catch(e){}
+  if(URL_COUNTRY) out.country = URL_COUNTRY;
+  if(curCode()) out.currency = curCode();
   return {
     survey_version:VERSION, language:state.lang, consent:true,
     is_customer: a.isCustomer==='yes',

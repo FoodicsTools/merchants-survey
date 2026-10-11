@@ -213,7 +213,7 @@ select
   public.cell(answers, 'priceAcceptable', case when answers->>'priceAcceptable' = '__skip' then 'Not sure' else answers->>'priceAcceptable' end) as price_acceptable,
   public.ans(answers, 'priceAcceptableWhy') as price_acceptable_why,
   case when answers ? 'country' then public.ans(answers, 'country') else 'Not recorded (older survey version)' end as country,
-  case coalesce(nullif(answers->>'currency', ''), case when answers->>'saasSpend' is not null or answers->>'priceAcceptable' is not null then 'SAR' end) when 'LOCAL' then 'Other (own currency)' else coalesce(nullif(answers->>'currency', ''), 'Not recorded') end as currency
+  case coalesce(nullif(answers->>'currency', ''), case when answers->>'saasSpend' is not null or answers->>'priceAcceptable' is not null then 'SAR' end) when 'LOCAL' then 'Other (own currency)' else coalesce(coalesce(nullif(answers->>'currency', ''), case when answers->>'saasSpend' is not null or answers->>'priceAcceptable' is not null then 'SAR' end), 'Not recorded') end as currency
 from public.responses;
 
 drop view if exists public.responses_flat_with_questions;

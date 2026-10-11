@@ -250,8 +250,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v4';
-var VERSION = 'v4';
+var STORE_KEY = 'foodics_mi_survey_v5';
+var VERSION = 'v5';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -443,6 +443,12 @@ var QUESTIONS = [
  qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعل السعر يبدو غير مبرر بالكامل؟'}:null},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('onboarding','Onboarding','التأهيل والتشغيل الأولي'),O('other','Other','أخرى',{other:true})]},
+{id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:12,
+ show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0},
+ q:{en:'What price would you be willing to pay for your POS subscription yearly?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع؟'},
+ qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع؟'}:null},
+ hint:{en:'Type the amount in SAR per year. A rough figure is fine.',ar:'اكتب المبلغ بالريال السعودي في السنة. يكفي رقم تقريبي.'},
+ ph:{en:'Amount in SAR, e.g. 5000',ar:'المبلغ بالريال، مثال: 5000'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'priceView',sec:'s2',type:'single',show:never,
  q:{en:"From what you know or have heard, how does Foodics' price compare with the value it offers?",ar:'من خلال ما تعرفه أو سمعته، كيف ترى سعر فودكس مقارنةً بالقيمة التي تقدمها؟'},
  opts:[O('good','Good value for the price','قيمة جيدة مقابل السعر'),O('same','About the same as other providers','مماثل لمزودين آخرين تقريباً'),O('higher',"Price is higher than the value I'd expect",'السعر أعلى من القيمة التي أتوقعها'),O('cheaper','Other providers give me what I need for less','مزودون آخرون يقدمون ما أحتاجه بسعر أقل'),O('unsure',"I don't know Foodics well enough to say",'لا أعرف فودكس بما يكفي للحكم')]},

@@ -442,7 +442,7 @@ var QUESTIONS = [
  q:{en:'What makes the price feel less than fully justified?',ar:'ما الذي يجعل السعر يبدو غير مبرر بالكامل؟'},
  qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعل السعر يبدو غير مبرر بالكامل؟'}:null},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','التوصيل والتركيب'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})],
+ opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','التوصيل والتركيب'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})]},
 {id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:12,
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0},
  q:{en:'What price would you be willing to pay for your POS subscription yearly (in SAR)?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع (بالريال السعودي)؟'},

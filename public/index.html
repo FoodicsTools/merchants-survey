@@ -370,12 +370,11 @@ var COUNTRY_ALIASES = {sa:'ksa',saudi:'ksa',om:'oman',jo:'jordan',ae:'uae',bh:'b
 var URL_COUNTRY = (function(){ try{ var c=(new URLSearchParams(location.search).get('country')||'').trim().toLowerCase(); c = COUNTRY_ALIASES[c]||c; return COUNTRIES[c] ? c : ''; }catch(e){ return ''; } })();
 function curCountry(){ return URL_COUNTRY; }
 function curCode(){ return COUNTRIES[URL_COUNTRY] ? COUNTRIES[URL_COUNTRY].cur : 'SAR'; }   /* a link without a country is treated as Saudi Arabia (SAR) */
-/* tokens in texts: {CUR} currency, {CHIP} short currency label, {ZATCA} Saudi-only wording */
+/* tokens in texts: {CUR} currency, {CHIP} short currency label */
 function fill(s){
   if(typeof s!=='string' || s.indexOf('{')<0) return s;
   var info=COUNTRIES[URL_COUNTRY]||COUNTRIES.ksa, ar=state && state.lang==='ar';
-  var zatca = (!URL_COUNTRY || URL_COUNTRY==='ksa') ? (ar?' (هيئة الزكاة)':' (ZATCA)') : '';
-  return s.split('{CUR}').join(ar?info.curAr:info.cur).split('{CHIP}').join(ar?info.chipAr:info.cur).split('{ZATCA}').join(zatca);
+  return s.split('{CUR}').join(ar?info.curAr:info.cur).split('{CHIP}').join(ar?info.chipAr:info.cur);
 }
 
 /* Order of sections: Introduction (s1), Market insights (s4), Foodics experience (s2), Challenges and needs (s3), Stay in touch (s5) */
@@ -426,7 +425,7 @@ var QUESTIONS = [
  ph:{en:'Amount, e.g. 25000',ar:'المبلغ، مثال: 25000'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'saasSpendOn',sec:'s4',type:'multi',max:20,
  q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
- opts:[O('accounting','Accounting and e-invoicing{ZATCA}','المحاسبة والفوترة الإلكترونية{ZATCA}'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
+ opts:[O('accounting','Accounting and e-invoicing','المحاسبة والفوترة الإلكترونية'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
 {id:'aiUse',sec:'s4',type:'multi',max:9,
  q:{en:'Where do you use AI in your business today?',ar:'أين تستخدم الذكاء الاصطناعي في نشاطك حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('marketing','Marketing content','محتوى التسويق'),O('guests','Replying to guests','الرد على الضيوف'),O('forecast','Forecasting and ordering','التوقعات والطلب'),O('accounting','Accounting','المحاسبة'),O('menu','Menu and pricing','القائمة والتسعير'),O('other','Other tools','أدوات أخرى',{other:true}),O('none',"I don't use AI yet",'لا أستخدمه بعد',{exclusive:true}),O('want',"I'd like to, but don't know where to start",'أرغب بذلك لكن لا أعرف من أين أبدأ',{exclusive:true})]},

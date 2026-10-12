@@ -250,8 +250,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v7';
-var VERSION = 'v7';
+var STORE_KEY = 'foodics_mi_survey_v8';
+var VERSION = 'v8';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -272,8 +272,7 @@ var UI = {
   consentTitle:'Before we start',
   consentText:'I agree that my answers will be stored and analysed for business purposes, and published only in aggregate.',
   agree:'I agree, start', disagree:"I don't agree",
-  interview:'Want to talk more? You can accept an interview invitation on the last screen.',
-  resume:'Continue where I left off',
+    resume:'Continue where I left off',
   declinedTitle:'No problem', declinedText:'Nothing was saved. You can start again whenever you like.', startOver:'Start again',
   back:'Back', next:'Next', skip:'Skip', submit:'Submit', sending:'Sending',
   required:'Required', selected:'{x} of {n} selected', pickUp:'Choose up to {n}',
@@ -295,13 +294,12 @@ var UI = {
   langBtn:'English',
   introTitle:'ساهم في رسم مستقبل قطاع المطاعم والمقاهي في المنطقة',
   introSub:'ستساعدنا إجاباتك على خدمتك بشكل أفضل',
-  about:'فودكس شركة برمجيات سحابية وتقنية مالية، تساعد المطاعم والمقاهي والمتاجر على إدارة كل شيء، من الطلبات والمدفوعات إلى المخزون، في منصة واحدة.',
+  about:'فودكس شركة سعودية متخصصة في تقديم حلول تكنولوجية حديثة متكاملة لنقاط البيع وإدارة المطاعم ومتاجر التجزئة',
   pill1:'نحو 5 دقائق',
   consentTitle:'قبل أن نبدأ',
-  consentText:'أوافق على تخزين إجاباتي وتحليلها لأغراض العمل، ونشرها بشكل مجمَّع فقط.',
+  consentText:'أوافق على استخدام إجاباتي لأغراض البحث وتطوير الخدمات، مع الحفاظ على خصوصية بياناتي وعرض النتائج بشكل إجمالي دون الإفصاح عن هويتي',
   agree:'أوافق، لنبدأ', disagree:'لا أوافق',
-  interview:'هل تود مواصلة الحوار؟ يمكنك قبول دعوة لمقابلة في الشاشة الأخيرة.',
-  resume:'أكمل من حيث توقفت',
+    resume:'أكمل من حيث توقفت',
   declinedTitle:'لا مشكلة', declinedText:'لم يتم حفظ أي شيء. يمكنك البدء من جديد متى شئت.', startOver:'ابدأ من جديد',
   back:'رجوع', next:'التالي', skip:'تخطَّ', submit:'إرسال', sending:'جارٍ الإرسال',
   required:'مطلوب', selected:'تم اختيار {x} من {n}', pickUp:'اختر حتى {n}',
@@ -368,25 +366,22 @@ var COUNTRIES = {
  egypt:{en:'Egypt',ar:'مصر',cur:'EGP',curAr:'بالجنيه المصري',chipAr:'ج.م'}
 };
 var COUNTRY_ALIASES = {sa:'ksa',saudi:'ksa',om:'oman',jo:'jordan',ae:'uae',bh:'bahrain',kw:'kuwait',eg:'egypt'};
-/* the link decides the country: https://survey.foodics.com/?country=oman&src=whatsapp. Without it, the survey asks. */
+/* the link decides the country: https://survey.foodics.com/?country=oman&src=whatsapp. Without it, the survey uses Saudi Arabia (SAR). */
 var URL_COUNTRY = (function(){ try{ var c=(new URLSearchParams(location.search).get('country')||'').trim().toLowerCase(); c = COUNTRY_ALIASES[c]||c; return COUNTRIES[c] ? c : ''; }catch(e){ return ''; } })();
-function curCountry(){ return URL_COUNTRY || (state && state.a && state.a.country) || ''; }
-function curCode(){ var c=curCountry(); return COUNTRIES[c] ? COUNTRIES[c].cur : (c==='other' ? 'LOCAL' : ''); }
+function curCountry(){ return URL_COUNTRY; }
+function curCode(){ return COUNTRIES[URL_COUNTRY] ? COUNTRIES[URL_COUNTRY].cur : 'SAR'; }   /* a link without a country is treated as Saudi Arabia (SAR) */
 /* tokens in texts: {CUR} currency, {CHIP} short currency label, {ZATCA} Saudi-only wording */
 function fill(s){
   if(typeof s!=='string' || s.indexOf('{')<0) return s;
-  var c=curCountry(), info=COUNTRIES[c], ar=state && state.lang==='ar';
-  var cur = info ? (ar?info.curAr:info.cur) : (c==='other' ? (ar?'بعملتك المحلية':'your local currency') : (ar?COUNTRIES.ksa.curAr:'SAR'));
-  var chip = info ? (ar?info.chipAr:info.cur) : (c==='other' ? (ar?'العملة المحلية':'local currency') : (ar?COUNTRIES.ksa.chipAr:'SAR'));
-  var zatca = (!c || c==='ksa') ? (ar?' (هيئة الزكاة)':' (ZATCA)') : '';
-  return s.split('{CUR}').join(cur).split('{CHIP}').join(chip).split('{ZATCA}').join(zatca);
+  var info=COUNTRIES[URL_COUNTRY]||COUNTRIES.ksa, ar=state && state.lang==='ar';
+  var zatca = (!URL_COUNTRY || URL_COUNTRY==='ksa') ? (ar?' (هيئة الزكاة)':' (ZATCA)') : '';
+  return s.split('{CUR}').join(ar?info.curAr:info.cur).split('{CHIP}').join(ar?info.chipAr:info.cur).split('{ZATCA}').join(zatca);
 }
+
 /* Order of sections: Introduction (s1), Market insights (s4), Foodics experience (s2), Challenges and needs (s3), Stay in touch (s5) */
 var QUESTIONS = [
 /* Introduction */
-{id:'country',sec:'s1',type:'single',req:true,show:function(){return !URL_COUNTRY},
- q:{en:'Which country is your business in?',ar:'في أي دولة يقع نشاطك؟'},
- opts:[O('ksa','Saudi Arabia','المملكة العربية السعودية'),O('oman','Oman','سلطنة عُمان'),O('jordan','Jordan','الأردن'),O('uae','United Arab Emirates','الإمارات العربية المتحدة'),O('bahrain','Bahrain','البحرين'),O('kuwait','Kuwait','الكويت'),O('egypt','Egypt','مصر'),O('other','Other country','دولة أخرى',{other:true,ph:{en:'Which country?',ar:'اسم الدولة'}})]},{id:'isCustomer',sec:'s1',type:'single',req:true,
+{id:'isCustomer',sec:'s1',type:'single',req:true,
  q:{en:'Are you a Foodics customer?',ar:'هل أنت عميل لدى فودكس؟'},
  opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (لم أعد عميلاً لديهم)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
 {id:'f5Id',sec:'s1',type:'textopt',show:cust,maxlen:40,
@@ -665,7 +660,6 @@ function renderIntro(){
         (resume?'<button type="button" class="btn ghost wide" id="resume">'+esc(u('resume'))+'</button>':'')+
         '<button type="button" class="btn ghost wide" id="disagree">'+esc(u('disagree'))+'</button>'+
       '</div>'+
-      '<p class="note">'+esc(u('interview'))+'</p>'+
     '</div>'+
    '</div>';
 }
@@ -1009,7 +1003,7 @@ function buildPayload(){
   if(c.prefs.length) contact.prefs=c.prefs.slice();
   var src=''; try{ src = (new URLSearchParams(location.search).get('src')||'').trim().toLowerCase(); }catch(e){}
   if(URL_COUNTRY) out.country = URL_COUNTRY;
-  if(curCode()) out.currency = curCode();
+  out.currency = curCode();
   return {
     survey_version:VERSION, language:state.lang, consent:true,
     is_customer: a.isCustomer==='yes',

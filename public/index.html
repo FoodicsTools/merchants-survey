@@ -250,8 +250,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v8';
-var VERSION = 'v8';
+var STORE_KEY = 'foodics_mi_survey_v9';
+var VERSION = 'v9';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -374,7 +374,7 @@ function curCode(){ return COUNTRIES[URL_COUNTRY] ? COUNTRIES[URL_COUNTRY].cur :
 function fill(s){
   if(typeof s!=='string' || s.indexOf('{')<0) return s;
   var info=COUNTRIES[URL_COUNTRY]||COUNTRIES.ksa, ar=state && state.lang==='ar';
-  return s.split('{CUR}').join(ar?info.curAr:info.cur).split('{CHIP}').join(ar?info.chipAr:info.cur);
+  return s.split('{CUR}').join(ar?info.curAr:info.cur).split('{CHIP}').join(ar?info.chipAr:info.cur).split('{CURNAME}').join(ar?info.curAr.slice(1):info.cur);
 }
 
 /* Order of sections: Introduction (s1), Market insights (s4), Foodics experience (s2), Challenges and needs (s3), Stay in touch (s5) */
@@ -419,10 +419,10 @@ var QUESTIONS = [
 {id:'techSpend',sec:'s4',type:'single',
  q:{en:'Over the next 12 months, your spending on technology will…',ar:'خلال الأشهر الـ 12 القادمة، سيكون إنفاقك على التقنية…'},
  opts:[O('up','Increase','أعلى'),O('same','Stay the same','كما هو'),O('down','Decrease','أقل')]},
-{id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:12,
+{id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:30,
  q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in {CUR}?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، {CUR}؟'},
- hint:{en:'A rough estimate is fine. Type the amount in numbers.',ar:'يكفي تقدير تقريبي. اكتب المبلغ بالأرقام.'},
- ph:{en:'Amount, e.g. 25000',ar:'المبلغ، مثال: 25000'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ hint:{en:'A rough estimate is fine. Type the amount. If your currency is not {CURNAME}, add it next to the amount (for example 5000 JOD).',ar:'يكفي تقدير تقريبي. اكتب المبلغ. وإذا كانت عملتك غير {CURNAME}، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
+ ph:{en:'Amount, e.g. 25000 or 25000 JOD',ar:'المبلغ، مثال: 25000 أو 25000 دينار'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'saasSpendOn',sec:'s4',type:'multi',max:20,
  q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
  opts:[O('accounting','Accounting and e-invoicing','المحاسبة والفوترة الإلكترونية'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
@@ -463,12 +463,12 @@ var QUESTIONS = [
  qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعل السعر يبدو غير مبرر بالكامل؟'}:null},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','التوصيل والتركيب'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})]},
-{id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:12,
+{id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:30,
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0},
  q:{en:'What price would you be willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'},
  qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'}:null},
- hint:{en:'Type the amount in {CUR} per year. A rough figure is fine.',ar:'اكتب المبلغ {CUR} في السنة. يكفي رقم تقريبي.'},
- ph:{en:'Amount, e.g. 5000',ar:'المبلغ، مثال: 5000'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ hint:{en:'Type the amount in {CUR} per year. A rough figure is fine. If your currency is different, add it next to the amount (for example 5000 JOD).',ar:'اكتب المبلغ {CUR} في السنة. يكفي رقم تقريبي. وإذا كانت عملتك مختلفة، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
+ ph:{en:'Amount, e.g. 5000 or 5000 JOD',ar:'المبلغ، مثال: 5000 أو 5000 دينار'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'priceAcceptableWhy',sec:'s2',type:'text',
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0&&/^\d+$/.test(String(a.priceAcceptable||''))},
  q:{en:'Why did you choose this price?',ar:'لماذا اخترت هذا السعر؟'},
@@ -594,7 +594,7 @@ function hasAnswer(q){
     case 'multi': return Array.isArray(v) && v.length>0;
     case 'scale': return typeof v==='number';
     case 'text': return !!(v && String(v).trim());
-    case 'textopt': return !!(v && String(v).trim());
+    case 'textopt': return !!(v && String(v).trim()) && (!q.numeric || v==='__skip' || /\d/.test(String(v)));
     case 'items': return !!a.unhappy_all || (a.unhappy && Object.keys(a.unhappy).length>0);
     case 'contact': return true;
   }
@@ -726,7 +726,7 @@ function renderQ(){
   }
   else if(q.type==='textopt'){
     var tv = a[q.id]==='__skip' ? '' : (a[q.id]||'');
-    var tin = '<input class="inp" id="ti" type="text" maxlength="'+(q.maxlen||60)+'"'+(q.numeric?' inputmode="numeric" dir="ltr"':'')+' autocomplete="off" placeholder="'+esc(L(q.ph)||u('typeHere'))+'" value="'+esc(tv)+'">';
+    var tin = '<input class="inp" id="ti" type="text" maxlength="'+(q.maxlen||60)+'"'+(q.numeric?' dir="auto"':'')+' autocomplete="off" placeholder="'+esc(L(q.ph)||u('typeHere'))+'" value="'+esc(tv)+'">';
     html += q.unit ? '<div style="display:flex;align-items:center;gap:12px">'+tin.replace('class="inp"','class="inp" style="flex:1"')+'<strong style="font-size:1.05rem;letter-spacing:.04em">'+esc(L(q.unit))+'</strong></div>' : tin;
     html += '<div class="opts" style="margin-top:14px" role="group">'+optHtml({v:'__skip',l:q.skip},0,a[q.id]==='__skip','checkbox',' data-skip="1"')+'</div>';
   }
@@ -941,7 +941,7 @@ screenEl.addEventListener('input',function(e){
   else if(t.id==='txt'){ state.a[q.id]=t.value; updateDock(); save(); }
   else if(t.id==='ti'){
     var tv2 = t.value;
-    if(q.numeric){ tv2 = tv2.replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[\u06F0-\u06F9]/g,function(d){return String(d.charCodeAt(0)-1776)}).replace(/\D/g,''); if(tv2!==t.value) t.value=tv2; }
+    if(q.numeric){ tv2 = tv2.replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[\u06F0-\u06F9]/g,function(d){return String(d.charCodeAt(0)-1776)}).replace(/[^0-9\s.,\u0600-\u06FFA-Za-z]/g,''); if(tv2!==t.value) t.value=tv2; }
     if(tv2.trim()) state.a[q.id]=tv2; else delete state.a[q.id];
     Array.prototype.forEach.call(screenEl.querySelectorAll('.opt[data-skip]'),function(el){ el.setAttribute('aria-checked','false'); });
     updateDock(); save();
@@ -1001,6 +1001,17 @@ function buildPayload(){
   }
   if(c.prefs.length) contact.prefs=c.prefs.slice();
   var src=''; try{ src = (new URLSearchParams(location.search).get('src')||'').trim().toLowerCase(); }catch(e){}
+  V.forEach(function(q){
+    if(q.type==='textopt' && q.numeric && typeof a[q.id]==='string' && a[q.id]!=='__skip'){
+      var rawv = a[q.id].replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[\u06F0-\u06F9]/g,function(d){return String(d.charCodeAt(0)-1776)});
+      var m = rawv.match(/\d[\d,.]*/);
+      if(m){
+        var amt = m[0].replace(/,/g,'').replace(/\.+$/,'');
+        var cur = rawv.replace(m[0],' ').replace(/[0-9.,]/g,' ').replace(/\s+/g,' ').trim().slice(0,20);
+        out[q.id+'_amount'] = amt; if(cur) out[q.id+'_currency'] = cur.toUpperCase();
+      }
+    }
+  });
   if(URL_COUNTRY) out.country = URL_COUNTRY;
   out.currency = curCode();
   return {

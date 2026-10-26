@@ -104,6 +104,8 @@ html[lang="ar"] h1.q{line-height:1.4;letter-spacing:0}
 .opt .key{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);font-size:13px;font-weight:600;color:var(--lav);transition:all .18s}
 @media (hover:none){.opt .key{display:none}}
 .opt .lbl{flex:1;min-width:0;overflow-wrap:anywhere}
+.flag{display:inline-block;vertical-align:middle;width:30px;height:20px;margin-inline-end:12px;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+.flag svg{display:block;width:100%;height:100%}
 .opt small{display:block;margin-top:2px;font-size:13.5px;font-weight:400;opacity:.78}
 .opt .tick{flex:none;width:22px;height:22px;opacity:0;transform:scale(.5);transition:all .22s var(--ease)}
 .opt[aria-checked="true"]{background:#fff;border-color:#fff;color:var(--brand)}
@@ -250,8 +252,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v9';
-var VERSION = 'v9';
+var STORE_KEY = 'foodics_mi_survey_v10';
+var VERSION = 'v10';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -368,15 +370,26 @@ var COUNTRIES = {
 var COUNTRY_ALIASES = {sa:'ksa',saudi:'ksa',om:'oman',jo:'jordan',ae:'uae',bh:'bahrain',kw:'kuwait',eg:'egypt'};
 /* the link decides the country: https://survey.foodics.com/?country=oman&src=whatsapp. Without it, the survey uses Saudi Arabia (SAR). */
 var URL_COUNTRY = (function(){ try{ var c=(new URLSearchParams(location.search).get('country')||'').trim().toLowerCase(); c = COUNTRY_ALIASES[c]||c; return COUNTRIES[c] ? c : ''; }catch(e){ return ''; } })();
-function curCountry(){ return URL_COUNTRY; }
-function curCode(){ return COUNTRIES[URL_COUNTRY] ? COUNTRIES[URL_COUNTRY].cur : 'SAR'; }   /* a link without a country is treated as Saudi Arabia (SAR) */
+function curCountry(){ var h = (typeof state!=='undefined' && state && state.a) ? state.a.hq : ''; return COUNTRIES[h] ? h : URL_COUNTRY; }   /* the headquarters answer decides the currency; before it is answered, the link country */
+function curCode(){ var c = curCountry(); return COUNTRIES[c] ? COUNTRIES[c].cur : 'SAR'; }   /* a link without a country is treated as Saudi Arabia (SAR) */
 /* tokens in texts: {CUR} currency, {CHIP} short currency label */
 function fill(s){
   if(typeof s!=='string' || s.indexOf('{')<0) return s;
-  var info=COUNTRIES[URL_COUNTRY]||COUNTRIES.ksa, ar=state && state.lang==='ar';
+  var info=COUNTRIES[curCountry()]||COUNTRIES.ksa, ar=state && state.lang==='ar';
   return s.split('{CUR}').join(ar?info.curAr:info.cur).split('{CHIP}').join(ar?info.chipAr:info.cur).split('{CURNAME}').join(ar?info.curAr.slice(1):info.cur);
 }
 
+/* ---------- Flags (inline pictures, so they show on every device) ---------- */
+var FLAGS = {
+ ksa:'<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#165B33"/><rect x="7" y="6.5" width="16" height="1.7" rx=".8" fill="#fff"/><rect x="8" y="12.6" width="14" height="1.2" fill="#fff"/><rect x="19" y="11.6" width="3" height="3.2" rx=".6" fill="#fff"/></svg>',
+ oman:'<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><rect y="6.67" width="30" height="6.67" fill="#DB161B"/><rect y="13.33" width="30" height="6.67" fill="#008000"/><rect width="8" height="20" fill="#DB161B"/><circle cx="4" cy="3.6" r="2" fill="#fff"/></svg>',
+ jordan:'<svg viewBox="0 0 30 20"><rect width="30" height="6.67" fill="#000"/><rect y="6.67" width="30" height="6.66" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#007A3D"/><path d="M0 0L13 10L0 20Z" fill="#CE1126"/><polygon points="4.4,8 5,9.6 6.7,9.7 5.4,10.8 5.8,12.4 4.4,11.5 3,12.4 3.4,10.8 2.1,9.7 3.8,9.6" fill="#fff"/></svg>',
+ uae:'<svg viewBox="0 0 30 20"><rect width="30" height="6.67" fill="#00732F"/><rect y="6.67" width="30" height="6.66" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#000"/><rect width="7.5" height="20" fill="#FF0000"/></svg>',
+ bahrain:'<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#CE1126"/><path d="M0 0H8L12 2L8 4L12 6L8 8L12 10L8 12L12 14L8 16L12 18L8 20H0Z" fill="#fff"/></svg>',
+ kuwait:'<svg viewBox="0 0 30 20"><rect width="30" height="6.67" fill="#007A3D"/><rect y="6.67" width="30" height="6.66" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#CE1126"/><path d="M0 0L8 6.67V13.33L0 20Z" fill="#000"/></svg>',
+ egypt:'<svg viewBox="0 0 30 20"><rect width="30" height="6.67" fill="#CE1126"/><rect y="6.67" width="30" height="6.66" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#000"/><circle cx="15" cy="10" r="2.3" fill="#C09300"/></svg>'
+};
+function flagHtml(code){ return FLAGS[code] ? '<span class="flag" aria-hidden="true">'+FLAGS[code]+'</span>' : ''; }
 /* Order of sections: Introduction (s1), Market insights (s4), Foodics experience (s2), Challenges and needs (s3), Stay in touch (s5) */
 var QUESTIONS = [
 /* Introduction */
@@ -396,6 +409,13 @@ var QUESTIONS = [
 {id:'branches',sec:'s1',type:'single',req:true,exact:true,noAuto:true,
  q:{en:'How many branches do you have?',ar:'كم عدد فروعك؟'},
  opts:[O('1','1 branch','فرع واحد'),O('2-3','2 to 3','من 2 إلى 3 فروع'),O('4-9','4 to 9','من 4 إلى 9 فروع'),O('10-24','10 to 24','من 10 إلى 24 فرعاً'),O('25-99','25 to 99','من 25 إلى 99 فرعاً'),O('100+','100 or more','100 فرع أو أكثر')]},
+{id:'hq',sec:'s1',type:'single',req:true,
+ q:{en:'Where is your restaurant or café headquartered?',ar:'أين يقع المقر الرئيسي لمطعمك أو مقهاك؟'},
+ opts:[O('ksa','KSA','السعودية',{flag:'ksa'}),O('oman','Oman','عُمان',{flag:'oman'}),O('jordan','Jordan','الأردن',{flag:'jordan'}),O('uae','UAE','الإمارات',{flag:'uae'}),O('bahrain','Bahrain','البحرين',{flag:'bahrain'}),O('kuwait','Kuwait','الكويت',{flag:'kuwait'}),O('egypt','Egypt','مصر',{flag:'egypt'})]},
+{id:'otherCountries',sec:'s1',type:'multi',max:20,
+ q:{en:'Do you operate in any other country?',ar:'هل تعمل في أي دولة أخرى؟'},hint:{en:'Optional. Select all that apply.',ar:'اختياري. اختر كل ما ينطبق.'},
+ opts:[O('ksa','KSA','السعودية',{flag:'ksa'}),O('oman','Oman','عُمان',{flag:'oman'}),O('jordan','Jordan','الأردن',{flag:'jordan'}),O('uae','UAE','الإمارات',{flag:'uae'}),O('bahrain','Bahrain','البحرين',{flag:'bahrain'}),O('kuwait','Kuwait','الكويت',{flag:'kuwait'}),O('egypt','Egypt','مصر',{flag:'egypt'})],
+ optsf:function(a){ return [O('ksa','KSA','السعودية',{flag:'ksa'}),O('oman','Oman','عُمان',{flag:'oman'}),O('jordan','Jordan','الأردن',{flag:'jordan'}),O('uae','UAE','الإمارات',{flag:'uae'}),O('bahrain','Bahrain','البحرين',{flag:'bahrain'}),O('kuwait','Kuwait','الكويت',{flag:'kuwait'}),O('egypt','Egypt','مصر',{flag:'egypt'})].filter(function(o){ return o.v!==a.hq; }); }},
 {id:'channels',sec:'s1',type:'multi',max:20,
  q:{en:'Which channels do you sell through today?',ar:'ما القنوات التي تبيع من خلالها حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('dinein','Dine-in','داخل المطعم'),O('takeaway','Takeaway','سفري / استلام'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('own','Own website or app','موقعي أو تطبيقي الخاص'),O('qr','QR ordering','الطلب عبر QR'),O('paytable','Pay-at-table','الدفع على الطاولة'),O('kiosk','Kiosk','أجهزة الطلب الذاتي (كشك)'),O('reservations','Reservations','الحجوزات')]},
@@ -422,7 +442,7 @@ var QUESTIONS = [
 {id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:30,
  q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in {CUR}?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، {CUR}؟'},
  hint:{en:'A rough estimate is fine. Type the amount. If your currency is not {CURNAME}, add it next to the amount (for example 5000 JOD).',ar:'يكفي تقدير تقريبي. اكتب المبلغ. وإذا كانت عملتك غير {CURNAME}، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
- ph:{en:'Amount, e.g. 25000 or 25000 JOD',ar:'المبلغ، مثال: 25000 أو 25000 دينار'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ ph:{en:'Amount, e.g. 25000 or 25000 JOD',ar:'المبلغ، مثال: 25000 أو 25000 دينار'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'saasSpendOn',sec:'s4',type:'multi',max:20,
  q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
  opts:[O('accounting','Accounting and e-invoicing','المحاسبة والفوترة الإلكترونية'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
@@ -468,7 +488,7 @@ var QUESTIONS = [
  q:{en:'What price would you be willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'},
  qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'}:null},
  hint:{en:'Type the amount in {CUR} per year. A rough figure is fine. If your currency is different, add it next to the amount (for example 5000 JOD).',ar:'اكتب المبلغ {CUR} في السنة. يكفي رقم تقريبي. وإذا كانت عملتك مختلفة، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
- ph:{en:'Amount, e.g. 5000 or 5000 JOD',ar:'المبلغ، مثال: 5000 أو 5000 دينار'},unit:{en:'{CHIP}',ar:'{CHIP}'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
+ ph:{en:'Amount, e.g. 5000 or 5000 JOD',ar:'المبلغ، مثال: 5000 أو 5000 دينار'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'priceAcceptableWhy',sec:'s2',type:'text',
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0&&/^\d+$/.test(String(a.priceAcceptable||''))},
  q:{en:'Why did you choose this price?',ar:'لماذا اخترت هذا السعر؟'},
@@ -537,6 +557,7 @@ var QUESTIONS = [
 ];
 /* Every question must be answered. Only the last contact page stays voluntary (personal details). */
 QUESTIONS.forEach(function(q){ if(q.type!=='contact') q.req = true; });
+QUESTIONS.forEach(function(q){ if(q.id==='otherCountries') q.req = false; });   /* optional */
 var CONTACT_PREFS = [
  O('interview','Invite me to a short interview','ادعوني إلى مقابلة قصيرة'),
  O('testing','Invite me to test new products','ادعوني لتجربة المنتجات الجديدة'),
@@ -686,7 +707,7 @@ function renderDone(){
 function optHtml(o,i,checked,role,extra){
   return '<button type="button" class="opt" role="'+role+'" aria-checked="'+(checked?'true':'false')+'" data-v="'+esc(o.v)+'"'+(extra||'')+'>'+
     '<span class="key" aria-hidden="true">'+LETTERS[i]+'</span>'+
-    '<span class="lbl">'+esc(L(o.l))+(o.sub?'<small>'+esc(L(o.sub))+'</small>':'')+'</span>'+ICON_TICK+'</button>';
+    '<span class="lbl">'+(o.flag?flagHtml(o.flag):'')+esc(L(o.l))+(o.sub?'<small>'+esc(L(o.sub))+'</small>':'')+'</span>'+ICON_TICK+'</button>';
 }
 
 function renderQ(){
@@ -1012,6 +1033,7 @@ function buildPayload(){
       }
     }
   });
+  if(Array.isArray(out.otherCountries)){ out.otherCountries = out.otherCountries.filter(function(c){ return c!==a.hq; }); if(!out.otherCountries.length) delete out.otherCountries; }
   if(URL_COUNTRY) out.country = URL_COUNTRY;
   out.currency = curCode();
   return {

@@ -138,7 +138,7 @@ textarea.inp{min-height:130px}
 @media (max-width:640px){.cf{grid-template-columns:1fr}}
 .cf label{display:grid;gap:6px;font-size:14px;color:var(--lav);font-weight:500}
 .cf .wide{grid-column:1/-1}
-.pot{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.pot{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
 .sub-h{margin:26px 0 12px;font-size:14px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--lav)}
 html[lang="ar"] .sub-h{letter-spacing:0;text-transform:none;font-size:15px}
 .err{margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(255,120,120,.16);border:1px solid rgba(255,150,150,.5);font-size:15px}
@@ -252,8 +252,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v10';
-var VERSION = 'v10';
+var STORE_KEY = 'foodics_mi_survey_v11';
+var VERSION = 'v11';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};

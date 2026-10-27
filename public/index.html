@@ -252,8 +252,8 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 /* ---------- Configuration ---------- */
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
-var STORE_KEY = 'foodics_mi_survey_v11';
-var VERSION = 'v11';
+var STORE_KEY = 'foodics_mi_survey_v12';
+var VERSION = 'v12';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -569,7 +569,7 @@ var WEIGHT = {single:6,scale:6,multi:10,items:16,text:24,textopt:10,contact:22};
 
 /* ---------- State ---------- */
 var state = {
-  lang: (navigator.language||'en').toLowerCase().indexOf('ar')===0 ? 'ar':'en',
+  lang: 'ar',   /* the survey always opens in Arabic; the language button switches to English */
   screen:'intro', cur:null, a:{}, contact:{name:'',entity:'',email:'',phone:'',account:'',f5:'',prefs:[]},
   startedAt:Date.now(), lastSec:null, halfShown:false, sending:false, submitError:false, submittedPrefs:[]
 };
@@ -586,7 +586,7 @@ function save(){
 function load(){
   try{
     var s = JSON.parse(localStorage.getItem(STORE_KEY)||'null');
-    if(s && s.cur && s.a){ state.lang=s.lang||state.lang; state.a=s.a; state.contact=s.contact||state.contact; state.startedAt=s.startedAt||Date.now(); state.halfShown=!!s.halfShown; state._resume=s.cur; hadSaved=true; }
+    if(s && s.cur && s.a){ state._savedLang=s.lang; state.a=s.a; state.contact=s.contact||state.contact; state.startedAt=s.startedAt||Date.now(); state.halfShown=!!s.halfShown; state._resume=s.cur; hadSaved=true; }
   }catch(e){}
 }
 
@@ -840,6 +840,7 @@ function updateDock(){
 /* ---------- Navigation ---------- */
 function startSurvey(fromResume){
   var V = visibleQs();
+  if(fromResume && state._savedLang) state.lang = state._savedLang;   /* resuming brings back the language they were using */
   if(fromResume && state._resume && V.some(function(q){return q.id===state._resume})) state.cur = state._resume;
   else { state.cur = V[0].id; if(!fromResume){ state.a={}; state.contact={name:'',entity:'',email:'',phone:'',account:'',f5:'',prefs:[]}; state.startedAt=Date.now(); state.halfShown=false; } }
   state.screen='q'; state.lastSec=null; state.submitError=false;

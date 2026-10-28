@@ -294,27 +294,27 @@ var UI = {
  },
  ar:{
   langBtn:'English',
-  introTitle:'ساهم في رسم مستقبل قطاع المطاعم والمقاهي في المنطقة',
-  introSub:'ستساعدنا إجاباتك على خدمتك بشكل أفضل',
-  about:'فودكس شركة سعودية متخصصة في تقديم حلول تكنولوجية حديثة متكاملة لنقاط البيع وإدارة المطاعم ومتاجر التجزئة',
-  pill1:'نحو 5 دقائق',
+  introTitle:'ساهم في تطوير مستقبل قطاع المطاعم والمقاهي في المنطقة',
+  introSub:'رأيك يساعدنا للارتقاء بجودة خدماتنا وتصميم حلول تواكب تطلعاتك',
+  about:'فودكس شركة سعودية متخصصة في تقديم حلول تقنية متكاملة لنقاط البيع وإدارة المطاعم ومتاجر التجزئة',
+  pill1:'الوقت التقديري المتبقي: 5 دقائق',
   consentTitle:'قبل أن نبدأ',
-  consentText:'أوافق على استخدام إجاباتي لأغراض البحث وتطوير الخدمات، مع الحفاظ على خصوصية بياناتي وعرض النتائج بشكل إجمالي دون الإفصاح عن هويتي',
+  consentText:'أوافق على استخدام إجاباتي لأغراض البحث وتطوير الخدمات، مع الحفاظ على خصوصية بياناتي مع مشاركة النتائج كبيانات عامة غير مرتبطة بهويتي',
   agree:'أوافق، لنبدأ', disagree:'لا أوافق',
     resume:'أكمل من حيث توقفت',
   declinedTitle:'لا مشكلة', declinedText:'لم يتم حفظ أي شيء. يمكنك البدء من جديد متى شئت.', startOver:'ابدأ من جديد',
   back:'رجوع', next:'التالي', skip:'تخطَّ', submit:'إرسال', sending:'جارٍ الإرسال',
   required:'مطلوب', selected:'تم اختيار {x} من {n}', pickUp:'اختر حتى {n}',
   other:'يرجى التحديد', typeHere:'اكتب إجابتك',
-  minLeft:'متبقٍ نحو {n} دقيقة', lessMin:'متبقٍ أقل من دقيقة',
+  minLeft:'الوقت التقديري المتبقي: {n} دقائق', minOne:'الوقت التقديري المتبقي: دقيقة واحدة', minTwo:'الوقت التقديري المتبقي: دقيقتان', lessMin:'الوقت التقديري المتبقي: أقل من دقيقة',
   halfway:'وصلنا إلى منتصف الطريق', lastStep:'الخطوة الأخيرة',
   pickReason:'اختر سبباً لكل منتج',
   contactNeed:'أضف بريداً إلكترونياً أو رقم جوال لنتمكن من التواصل معك', emailBad:'يرجى التحقق من البريد الإلكتروني',
   sendFail:'تعذّر إرسال إجاباتك. تحقق من الاتصال وحاول مرة أخرى. إجاباتك محفوظة هنا.',
-  thanks:'شكراً لك!', thanksText:'وصلت إجاباتك. ستساهم في دراسة رؤى السوق وفي ما ستبنيه فودكس لاحقاً.',
+  thanks:'شكراً لك!', thanksText:'وصلت إجاباتك. تسهم مشاركتكم القيّمة في إثراء التقرير السنوي لقطاع الأعمال وفي دعم وتوجيه مسار تطوير الحلول والخدمات المستقبلية لدى فودكس.',
   thanksReport:'سنرسل لك التقرير فور نشره.', share:'تعرف صاحب نشاط آخر؟ انسخ رابط الاستطلاع', copied:'تم نسخ الرابط',
   previewNote:'Preview mode: answers are not saved. Set SUBMIT_URL in config.js to start collecting responses.', previewData:'What would have been sent',
-  noteOpt:'هل تود إضافة شيء؟ (اختياري)',
+  noteOpt:'هل تود إضافة ملاحظة؟ (اختياري)',
   exactPh:'العدد الدقيق (اختياري)',
   answerFirst:'يرجى الإجابة للمتابعة',
   sec:{s1:'مقدمة', s4:'رؤى السوق', s2c:'تجربتك مع فودكس', s2n:'أدواتك واحتياجاتك', s3:'التحديات والاحتياجات', s5:'ابقَ على تواصل'}
@@ -324,7 +324,7 @@ var UI = {
 /* ---------- Products (from the Foodics product list) ---------- */
 var P = function(v,name,en,ar){return O(v,name,name,{sub:{en:en,ar:ar}})};
 var PRODUCTS = [
- P('pos','Point of Sale Solution','Cloud POS and restaurant management','نقطة بيع وإدارة مطاعم سحابية'),
+ P('pos','Point of Sale Solution','Cloud POS and restaurant management','نظام الكاشير'),
  P('black','Foodics Black','All-in-one for full-service restaurants','حل متكامل للمطاعم ذات الخدمة الكاملة'),
  P('paytable','Pay at Table','Scan, split and pay at the table','امسح وقسّم وادفع من الطاولة'),
  P('cds','Customer Display Screen','Checkout display for your customers','شاشة عرض للعميل عند الدفع'),
@@ -335,7 +335,7 @@ var PRODUCTS = [
  P('kds','Kitchen Display Screen','Kitchen order screen','شاشة طلبات المطبخ'),
  P('acct','Foodics Accounting','Accounting built for restaurants','محاسبة مصممة للمطاعم'),
  P('one','Foodics One','One device with a built-in cashier','جهاز واحد بكاشير مدمج'),
- P('capital','Foodics Capital','Funding based on your performance','تمويل بحسب أداء مطعمك'),
+ P('capital','Foodics Capital','Funding based on your performance','حلول التمويل بناءً على حجم المبيعات'),
  O('notsure','Not sure','لست متأكداً',{exclusive:true})
 ];
 var REASONS = [
@@ -395,17 +395,17 @@ var QUESTIONS = [
 /* Introduction */
 {id:'isCustomer',sec:'s1',type:'single',req:true,
  q:{en:'Are you a Foodics customer?',ar:'هل أنت عميل لدى فودكس؟'},
- opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (لم أعد عميلاً لديهم)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
+ opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (عميل سابق)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
 {id:'f5Id',sec:'s1',type:'textopt',show:cust,maxlen:40,
  q:{en:'What is your F5 ID?',ar:'ما هو معرّف F5 الخاص بك؟'},
- hint:{en:'(We may already know some details about your business through your F5 ID. We still ask the next questions so we can double-check them and make sure we have the full picture.)',ar:'(قد تتوفر لدينا بعض المعلومات عن نشاطك عبر معرّف F5، ومع ذلك نطرح عليك الأسئلة التالية للتأكد منها وللحصول على الصورة الكاملة.)'},
+ hint:{en:'(We may already know some details about your business through your F5 ID. We still ask the next questions so we can double-check them and make sure we have the full picture.)',ar:'(قد تتوفر لدينا بعض المعلومات عن نشاطك عبر معرّف F5، نطرح هذه الأسئلة لمطابقة بياناتك وفهم احتياجات نشاطك بدقة.)'},
  ph:{en:'F5 ID',ar:'معرّف F5'},skip:{en:"I don't know it",ar:'لا أعرفه'}},
 {id:'position',sec:'s1',type:'single',req:true,
  q:{en:"What's your position?",ar:'ما هو منصبك؟'},
  opts:[O('owner','Owner / founder','مالك / مؤسس'),O('gm','General manager / operations','مدير عام / عمليات'),O('finance','Finance','المالية'),O('it','IT / technology','التقنية'),O('marketing','Marketing','التسويق'),O('other','Other','أخرى',{other:true})]},
 {id:'entityType',sec:'s1',type:'multi',req:true,max:9,
  q:{en:'What type of business do you run?',ar:'ما نوع نشاطك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('restaurant','Restaurant','مطعم'),O('cafe','Café','مقهى'),O('bakery','Bakery or sweets','مخبز أو حلويات'),O('cloud','Cloud kitchen','مطبخ سحابي'),O('catering','Catering','تموين وإعاشة'),O('other','Other','أخرى',{other:true})]},
+ opts:[O('restaurant','Restaurant','مطعم'),O('cafe','Café','مقهى'),O('bakery','Bakery or sweets','مخبز أو حلويات'),O('cloud','Cloud kitchen','مطبخ سحابي'),O('catering','Catering','خدمات إعاشة وتموين'),O('other','Other','أخرى',{other:true})]},
 {id:'branches',sec:'s1',type:'single',req:true,exact:true,noAuto:true,
  q:{en:'How many branches do you have?',ar:'كم عدد فروعك؟'},
  opts:[O('1','1 branch','فرع واحد'),O('2-3','2 to 3','من 2 إلى 3 فروع'),O('4-9','4 to 9','من 4 إلى 9 فروع'),O('10-24','10 to 24','من 10 إلى 24 فرعاً'),O('25-99','25 to 99','من 25 إلى 99 فرعاً'),O('100+','100 or more','100 فرع أو أكثر')]},
@@ -418,7 +418,7 @@ var QUESTIONS = [
  optsf:function(a){ return [O('ksa','KSA','السعودية',{flag:'ksa'}),O('oman','Oman','عُمان',{flag:'oman'}),O('jordan','Jordan','الأردن',{flag:'jordan'}),O('uae','UAE','الإمارات',{flag:'uae'}),O('bahrain','Bahrain','البحرين',{flag:'bahrain'}),O('kuwait','Kuwait','الكويت',{flag:'kuwait'}),O('egypt','Egypt','مصر',{flag:'egypt'})].filter(function(o){ return o.v!==a.hq; }); }},
 {id:'channels',sec:'s1',type:'multi',max:20,
  q:{en:'Which channels do you sell through today?',ar:'ما القنوات التي تبيع من خلالها حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('dinein','Dine-in','داخل المطعم'),O('takeaway','Takeaway','سفري / استلام'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('own','Own website or app','موقعي أو تطبيقي الخاص'),O('qr','QR ordering','الطلب عبر QR'),O('paytable','Pay-at-table','الدفع على الطاولة'),O('kiosk','Kiosk','أجهزة الطلب الذاتي (كشك)'),O('reservations','Reservations','الحجوزات')]},
+ opts:[O('dinein','Dine-in','الطلبات المحلية (صالة الفرع)'),O('takeaway','Takeaway','طلبات خارجية / استلام من الفرع'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('own','Own website or app','المنصات الرقمية الخاصة بالمنشأة (تطبيق / موقع إلكتروني)'),O('qr','QR ordering','الطلب الذاتي عبر الباركود (QR Code)‎'),O('paytable','Pay-at-table','الدفع من الطاولة (Pay at Table)‎'),O('kiosk','Kiosk','أجهزة الخدمة الذاتية'),O('reservations','Reservations','الحجوزات')]},
 
 /* Market insights */
 {id:'salesTrend',sec:'s4',type:'single',
@@ -426,46 +426,46 @@ var QUESTIONS = [
  opts:[O('up2','Up a lot','ارتفعت كثيراً'),O('up1','Up slightly','ارتفعت قليلاً'),O('flat','About the same','ثابتة تقريباً'),O('dn1','Down slightly','انخفضت قليلاً'),O('dn2','Down a lot','انخفضت كثيراً')]},
 {id:'plan',sec:'s4',type:'single',
  q:{en:"What's your plan for the next 12 months?",ar:'ما خطتك للأشهر الـ 12 القادمة؟'},
- opts:[O('open','Open new branches','افتتاح فروع جديدة'),O('same','Stay as we are','البقاء كما نحن'),O('close','Close some','إغلاق بعض الفروع')]},
+ opts:[O('open','Open new branches','افتتاح فروع جديدة'),O('same','Stay as we are','المحافظة على الوضع الحالي'),O('close','Close some','تقليص عدد الفروع')]},
 {id:'margins',sec:'s4',type:'multi',max:20,
- q:{en:'What squeezes your margins the most?',ar:'ما هو أكتر شيء يضغط على هوامشك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('food','Food costs','تكلفة المواد الغذائية'),O('rent','Rent','الإيجارات'),O('labour','Labour and hiring','العمالة والتوظيف'),O('commissions','Delivery commissions','عمولات التوصيل'),O('fees','Payment fees','رسوم المدفوعات'),O('competition','Competition','المنافسة'),O('regulation','Regulation and e-invoicing','اللوائح والفوترة الإلكترونية'),O('demand','Weaker demand','ضعف الطلب')],cols:true},
+ q:{en:'What squeezes your margins the most?',ar:'ما أبرز العوامل المؤثرة على هوامش الربحية لديك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('food','Food costs','تكلفة المواد الغذائية'),O('rent','Rent','الإيجارات'),O('labour','Labour and hiring','تكاليف الرواتب والعمالة'),O('commissions','Delivery commissions','عمولات تطبيقات التوصيل'),O('fees','Payment fees','رسوم نقاط البيع والبطاقات البنكية'),O('competition','Competition','المنافسة'),O('regulation','Regulation and e-invoicing','اللوائح والفوترة الإلكترونية'),O('demand','Weaker demand','ضعف الطلب')],cols:true},
 {id:'onlineShare',sec:'s4',type:'single',
- q:{en:'About what share of your sales comes from delivery apps and online ordering?',ar:'ما نسبة مبيعاتك تقريباً التي تأتي من تطبيقات التوصيل والطلب عبر الإنترنت؟'},
- opts:[O('lt10','Less than 10%','أقل من 10٪'),O('10-25','10–25%','10–25٪'),O('26-50','26–50%','26–50٪'),O('gt50','More than 50%','أكثر من 50٪'),O('unsure','Not sure','لست متأكداً')]},
+ q:{en:'About what share of your sales comes from delivery apps and online ordering?',ar:'كم تشكّل المبيعات عبر تطبيقات التوصيل والقنوات الرقمية من دخلك؟'},
+ opts:[O('lt10','Less than 10%','أقل من 10٪'),O('10-25','10–25%','10–25٪'),O('26-50','26–50%','26–50٪'),O('gt50','More than 50%','أكثر من 50٪'),O('unsure','Not sure','غير متأكد')]},
 {id:'salesDrivers',sec:'s4',type:'multi',max:20,
- q:{en:'What drove your sales the most this year?',ar:'ما الذي رفع مبيعاتك أكثر هذا العام؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('promos','Promotions and discounts','العروض والخصومات'),O('loyalty','Loyalty program','برامج الولاء'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('social','Social media and influencers','وسائل التواصل والمؤثرون'),O('pricing','Pricing changes','تعديل الأسعار'),O('branches','Opening new branch(es)','افتتاح فرع جديد أو أكثر'),O('other','Other','أخرى',{other:true})],cols:true},
+ q:{en:'What drove your sales the most this year?',ar:'ما العامل الأكثر مساهمة في زيادة مبيعاتك هذا العام؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('promos','Promotions and discounts','العروض والخصومات'),O('loyalty','Loyalty program','برامج الولاء'),O('delivery','Delivery apps','تطبيقات التوصيل'),O('social','Social media and influencers','التسويق الرقمي وإعلانات المؤثرين'),O('pricing','Pricing changes','تحديث قائمة الأسعار'),O('branches','Opening new branch(es)','افتتاح فرع جديد أو أكثر'),O('other','Other','أخرى',{other:true})],cols:true},
 {id:'techSpend',sec:'s4',type:'single',
- q:{en:'Over the next 12 months, your spending on technology will…',ar:'خلال الأشهر الـ 12 القادمة، سيكون إنفاقك على التقنية…'},
+ q:{en:'Over the next 12 months, your spending on technology will…',ar:'خلال الأشهر الـ 12 القادمة، كيف تتوقع أن يتغير حجم إنفاقك على الحلول التقنية؟'},
  opts:[O('up','Increase','أعلى'),O('same','Stay the same','كما هو'),O('down','Decrease','أقل')]},
 {id:'saasSpend',sec:'s4',type:'textopt',numeric:true,maxlen:30,
- q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in {CUR}?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) في السنة، {CUR}؟'},
- hint:{en:'A rough estimate is fine. Type the amount. If your currency is not {CURNAME}, add it next to the amount (for example 5000 JOD).',ar:'يكفي تقدير تقريبي. اكتب المبلغ. وإذا كانت عملتك غير {CURNAME}، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
+ q:{en:'How much does your business spend on software subscriptions (SaaS) in a year, in {CUR}?',ar:'كم تنفق منشأتك تقريباً على اشتراكات البرامج (SaaS) سنوياً ({CUR})؟'},
+ hint:{en:'A rough estimate is fine. Type the amount. If your currency is not {CURNAME}, add it next to the amount (for example 5000 JOD).',ar:'يكفي ذكر رقم تقريبي. اكتب المبلغ. وإذا كانت عملتك غير {CURNAME}، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
  ph:{en:'Amount, e.g. 25000 or 25000 JOD',ar:'المبلغ، مثال: 25000 أو 25000 دينار'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'saasSpendOn',sec:'s4',type:'multi',max:20,
- q:{en:'Which kinds of software do you pay for?',ar:'على أي أنواع من البرامج تنفق؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
- opts:[O('accounting','Accounting and e-invoicing','المحاسبة والفوترة الإلكترونية'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق ورسائل واتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
+ q:{en:'Which kinds of software do you pay for?',ar:'ما أنواع البرامج والأنظمة التي تخصص لها منشأتكم ميزانية اشتراك؟'},hint:{en:'Besides your POS system. Select all that apply.',ar:'بخلاف نظام نقاط البيع. اختر كل ما ينطبق.'},
+ opts:[O('accounting','Accounting and e-invoicing','المحاسبة والفوترة الإلكترونية'),O('payroll','Payroll and HR','الرواتب والموارد البشرية'),O('inventory','Inventory and supplier ordering','المخزون والطلب من الموردين'),O('online','Online ordering website or app','موقع أو تطبيق للطلب عبر الإنترنت'),O('delivery','Delivery-app management','إدارة تطبيقات التوصيل'),O('marketing','Marketing and WhatsApp messaging','التسويق وحملات الواتساب'),O('loyalty','Loyalty and CRM','الولاء وإدارة علاقات العملاء'),O('payments','Payment gateways','بوابات الدفع'),O('reporting','Reporting and analytics','التقارير والتحليلات'),O('scheduling','Staff scheduling','جدولة الموظفين'),O('reservations','Table reservations','حجز الطاولات'),O('office','Office and communication tools','أدوات المكتب والتواصل'),O('other','Other','أخرى',{other:true}),O('none','None','لا شيء',{exclusive:true})],cols:true},
 {id:'aiUse',sec:'s4',type:'multi',max:9,
- q:{en:'Where do you use AI in your business today?',ar:'أين تستخدم الذكاء الاصطناعي في نشاطك حالياً؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ q:{en:'Where do you use AI in your business today?',ar:'كيف توظّف الذكاء الاصطناعي في مشروعك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('marketing','Marketing content','محتوى التسويق'),O('guests','Replying to guests','الرد على الضيوف'),O('forecast','Forecasting and ordering','التوقعات والطلب'),O('accounting','Accounting','المحاسبة'),O('menu','Menu and pricing','القائمة والتسعير'),O('other','Other tools','أدوات أخرى',{other:true}),O('none',"I don't use AI yet",'لا أستخدمه بعد',{exclusive:true}),O('want',"I'd like to, but don't know where to start",'أرغب بذلك لكن لا أعرف من أين أبدأ',{exclusive:true})]},
 {id:'trend',sec:'s4',type:'text',
- q:{en:"In one sentence, what's the biggest change you see coming in F&B?",ar:'في جملة واحدة، ما أكبر تغيير تتوقع أن يشهده قطاع المطاعم والمقاهي؟'}},
+ q:{en:"In one sentence, what's the biggest change you see coming in F&B?",ar:'في جملة: ما أكبر تحوّل ينتظر قطاع المطاعم والمقاهي؟'}},
 
 /* Foodics experience (customers) / tools and needs (non-customers) */
 {id:'nps',sec:'s2',type:'scale',smin:0,smax:10,show:cust,
- q:{en:'How likely are you to recommend Foodics to another restaurant or café owner?',ar:'ما مدى احتمال أن توصي باستخدام فودكس لمالك مطعم أو مقهى آخر؟'},
+ q:{en:'How likely are you to recommend Foodics to another restaurant or café owner?',ar:'ما مدى احتمالية أن ترشّح نظام فودكس لمالك مطعم أو مقهى؟'},
  lo:{en:'Not at all likely',ar:'غير محتمل إطلاقاً'},hi:{en:'Extremely likely',ar:'محتمل جداً'}},
 {id:'leaveReason',sec:'s2',type:'single',show:former,
  q:{en:'What was the main reason you stopped using Foodics?',ar:'ما السبب الرئيسي لتوقفك عن استخدام فودكس؟'},
  opts:[O('price','Price or subscription cost','السعر أو تكلفة الاشتراك'),O('lowuse',"We weren't using enough features to justify the cost",'لم نكن نستخدم مزايا كافية تبرر التكلفة'),O('support','Support quality or slow problem resolution','جودة الدعم الفني أو بطء حل المشكلات'),O('stability','Instability','عدم استقرار النظام'),O('ease','Hard to use or weak training','صعوبة الاستخدام أو ضعف التدريب'),O('missing',"Missing products or features we need",'عدم توفر منتجات أو مزايا نحتاجها'),O('integration','Weak integration with other systems','ضعف التكامل مع الأنظمة الأخرى'),O('switched','We moved to a system that suits our needs better','انتقلنا إلى نظام أنسب لاحتياجاتنا'),O('closed','The business closed or changed its model','توقف النشاط أو تغيّر نموذج العمل'),O('other','Other','أخرى',{other:true})]},
 {id:'satisfaction',sec:'s2',type:'scale',smin:1,smax:10,show:hist,
- q:{en:'Overall, how satisfied are you with Foodics?',ar:'بشكل عام، ما مدى رضاك عن فودكس؟'},
+ q:{en:'Overall, how satisfied are you with Foodics?',ar:'إجمالاً، ما مستوى رضاكم عن فودكس؟'},
  qf:function(a){return former(a)?{en:'Overall, how satisfied were you with Foodics?',ar:'بشكل عام، ما مدى رضاك عن فودكس عندما كنت تستخدمه؟'}:null},
- lo:{en:'Very bad',ar:'سيئ جداً'},hi:{en:'Excellent',ar:'ممتاز'}},
+ lo:{en:'Very bad',ar:'غير راضٍ إطلاقاً'},hi:{en:'Excellent',ar:'راضٍ تماماً'}},
 {id:'products',sec:'s2',type:'multi',max:20,show:hist,
- q:{en:'Which Foodics products do you subscribe to?',ar:'ما منتجات فودكس المشترك بها؟'},
- qf:function(a){return former(a)?{en:'Which Foodics products did you use?',ar:'ما منتجات فودكس التي كنت تستخدمها؟'}:null},
+ q:{en:'Which Foodics products do you subscribe to?',ar:'ما هي حلول فودكس المفعلة لدى منشأتكم حالياً؟'},
+ qf:function(a){return former(a)?{en:'Which Foodics products did you use?',ar:'ما هي حلول فودكس التي كانت مفعلة لدى منشأتكم؟'}:null},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:PRODUCTS,cols:true},
 {id:'unhappy',sec:'s2',type:'items',show:function(a){return hist(a)&&haveProducts(a).length>0},
@@ -473,21 +473,21 @@ var QUESTIONS = [
  qf:function(a){return former(a)?{en:'Which products were you not fully satisfied with?',ar:'ما المنتجات التي لم تكن راضياً عنها تماماً؟'}:null},
  hint:{en:'Pick the product, then tell us why.',ar:'اختر المنتج ثم أخبرنا بالسبب.'}},
 {id:'afterSales',sec:'s2',type:'scale',smin:1,smax:5,labels:LABSERVICE,show:hist,
- q:{en:"How would you rate Foodics' after-sales service?",ar:'كيف تقيّم خدمة ما بعد البيع من فودكس؟'},
- qf:function(a){return former(a)?{en:"How did you rate Foodics' after-sales service?",ar:'كيف كنت تقيّم خدمة ما بعد البيع من فودكس؟'}:null}},
+ q:{en:"How would you rate Foodics' after-sales service?",ar:'كيف تقيّم مستوى الدعم الفني وخدمات ما بعد البيع؟'},
+ qf:function(a){return former(a)?{en:"How did you rate Foodics' after-sales service?",ar:'كيف كنت تقيّم مستوى الدعم الفني وخدمات ما بعد البيع؟'}:null}},
 {id:'priceValue',sec:'s2',type:'scale',smin:1,smax:5,labels:LABPRICE,show:hist,
- q:{en:"Do you think Foodics' prices are justified compared to the quality of what you get?",ar:'هل ترى أن أسعار فودكس مبررة مقارنةً بجودة ما تحصل عليه؟'},
- qf:function(a){return former(a)?{en:"Do you think Foodics' prices were justified compared to the quality of what you got?",ar:'هل ترى أن أسعار فودكس كانت مبررة مقارنةً بجودة ما حصلت عليه؟'}:null}},
+ q:{en:"Do you think Foodics' prices are justified compared to the quality of what you get?",ar:'هل ترى أن أسعار فودكس مناسبة مقارنةً بجودة ما تحصل عليه؟'},
+ qf:function(a){return former(a)?{en:"Do you think Foodics' prices were justified compared to the quality of what you got?",ar:'هل ترى أن أسعار فودكس كانت مناسبة مقارنةً بجودة ما حصلت عليه؟'}:null}},
 {id:'priceWhy',sec:'s2',type:'multi',max:9,show:function(a){return hist(a)&&Number(a.priceValue)<=3},
- q:{en:'What makes the price feel less than fully justified?',ar:'ما الذي يجعل السعر يبدو غير مبرر بالكامل؟'},
- qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعل السعر يبدو غير مبرر بالكامل؟'}:null},
+ q:{en:'What makes the price feel less than fully justified?',ar:'ما الذي يجعلك تشعر أن التكلفة لا تتناسب مع الخدمة؟'},
+ qf:function(a){return former(a)?{en:'What made the price feel less than fully justified?',ar:'ما الذي جعلك تشعر أن التكلفة لا تتناسب مع الخدمة؟'}:null},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','إمكانيات المنتج'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','التوصيل والتركيب'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})]},
+ opts:[O('price','The price itself','السعر نفسه'),O('capability','Product capability','نقص في ميزات وخصائص النظام'),O('support','Customer support','دعم العملاء'),O('account','Account management','إدارة الحساب'),O('billing','Billing','الفوترة'),O('sales','Sales misalignment','عدم توافق وعود المبيعات مع الواقع'),O('delivery','Delivery and installation','توصيل وتركيب الأجهزة'),O('training','Training and setup','التدريب والإعداد'),O('other','Other','أخرى',{other:true})]},
 {id:'priceAcceptable',sec:'s2',type:'textopt',numeric:true,maxlen:30,
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0},
  q:{en:'What price would you be willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي ترغب في دفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'},
  qf:function(a){return former(a)?{en:'What price would you have been willing to pay for your POS subscription yearly (in {CUR})?',ar:'ما السعر الذي كنت ستقبل بدفعه سنوياً مقابل اشتراك نقاط البيع ({CUR})؟'}:null},
- hint:{en:'Type the amount in {CUR} per year. A rough figure is fine. If your currency is different, add it next to the amount (for example 5000 JOD).',ar:'اكتب المبلغ {CUR} في السنة. يكفي رقم تقريبي. وإذا كانت عملتك مختلفة، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
+ hint:{en:'Type the amount in {CUR} per year. A rough figure is fine. If your currency is different, add it next to the amount (for example 5000 JOD).',ar:'اكتب المبلغ {CUR} في السنة. يكفي ذكر رقم تقريبي. وإذا كانت عملتك مختلفة، أضفها بجانب المبلغ (مثال: 5000 دينار أردني).'},
  ph:{en:'Amount, e.g. 5000 or 5000 JOD',ar:'المبلغ، مثال: 5000 أو 5000 دينار'},skip:{en:"I'm not sure",ar:'لست متأكداً'}},
 {id:'priceAcceptableWhy',sec:'s2',type:'text',
  show:function(a){return hist(a)&&Number(a.priceValue)<=3&&Array.isArray(a.priceWhy)&&a.priceWhy.indexOf('price')>=0&&/^\d+$/.test(String(a.priceAcceptable||''))},
@@ -499,17 +499,17 @@ var QUESTIONS = [
 {id:'priceViewWhy',sec:'s2',type:'multi',max:9,show:function(a){return never(a)&&(a.priceView==='higher'||a.priceView==='cheaper')},
  q:{en:'What gives you that impression?',ar:'ما الذي يعطيك هذا الانطباع؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('price','The price itself','السعر نفسه'),O('products','What I have heard about the products','ما سمعته عن المنتجات'),O('support','What I have heard about the support','ما سمعته عن الدعم الفني'),O('offers','Offers from other providers','عروض مزودين آخرين'),O('merchants','What other merchants say','ما يقوله تجار آخرون'),O('other','Other','أخرى',{other:true})]},
-{id:'pricingPref',sec:'s2',type:'multi',max:20,hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},show:function(a){return !cust(a)||Number(a.priceValue)<=3},
- q:{en:'How would you prefer to pay for your POS subscription?',ar:'كيف تفضّل سداد اشتراك نقاط البيع؟'},
- opts:[O('annual','Full amount per year','السداد الكامل سنوياً'),O('monthly','Monthly installments','أقساط شهرية'),O('bundle3','3-year bundle with a discount','باقة لثلاث سنوات بخصم'),O('other','Other','أخرى',{other:true})]},
+{id:'pricingPref',sec:'s2',type:'multi',max:20,hint:{en:'Select all that apply',ar:'(يمكنك تحديد أكثر من خيار)'},show:function(a){return !cust(a)||Number(a.priceValue)<=3},
+ q:{en:'How would you prefer to pay for your POS subscription?',ar:'ما خيارات الدفع الأنسب لك؟'},
+ opts:[O('annual','Full amount per year','دفع سنوي كامل مقدماً'),O('monthly','Monthly installments','أقساط شهرية'),O('bundle3','3-year bundle with a discount','اشتراك 3 سنوات بخصم مميز'),O('other','Other','أخرى',{other:true})]},
 {id:'wanted',sec:'s2',type:'multi',max:20,
- q:{en:'Which product or service would you like Foodics to add?',ar:'ما المنتج أو الخدمة التي تتمنى أن تضيفها فودكس؟'},
- qf:function(a){return cust(a)?null:(former(a)?{en:'Which product or service would you have liked Foodics to offer?',ar:'ما المنتج أو الخدمة التي كنت تتمنى أن تقدمها فودكس؟'}:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'})},
+ q:{en:'Which product or service would you like Foodics to add?',ar:'ما الميزة أو الخدمة التي تتطلع لإضافتها في فودكس؟'},
+ qf:function(a){return cust(a)?null:(former(a)?{en:'Which product or service would you have liked Foodics to offer?',ar:'ما الميزة أو الخدمة التي كنت تتطلع إلى أن تقدمها فودكس؟'}:{en:'Which product or service do you wish existed for your business?',ar:'ما المنتج أو الخدمة التي تتمنى توفرها لنشاطك؟'})},
  hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('hr','HR','الموارد البشرية'),O('forecast','Demand forecasting','توقع الطلب'),O('procure','Supplier ordering and procurement','الطلب من الموردين والمشتريات'),O('marketing','Marketing services','خدمات التسويق'),O('reports','Deeper reports and benchmarks','تقارير ومقارنات أعمق'),O('other','Other','أخرى',{other:true}),O('none','Nothing more for now','لا شيء إضافي حالياً',{exclusive:true})]},
+ opts:[O('hr','HR','الموارد البشرية'),O('forecast','Demand forecasting','التحليل التنبؤي الذكي للطلب والمخزون'),O('procure','Supplier ordering and procurement','الطلب من الموردين والمشتريات'),O('marketing','Marketing services','خدمات التسويق'),O('reports','Deeper reports and benchmarks','تقارير تحليلية ومقارنات معيارية بالسوق (Benchmarking)‎'),O('other','Other','أخرى',{other:true}),O('none','Nothing more for now','الميزات الحالية تفي احتياجاتك',{exclusive:true})]},
 {id:'finInterest',sec:'s2',type:'scale',smin:1,smax:5,
- q:{en:'How interested would you be in banking-type services from Foodics, such as instant deposits and business financing?',ar:'ما مدى اهتمامك بخدمات شبيهة بالخدمات المصرفية من فودكس، مثل الإيداع الفوري وتمويل الأعمال؟'},
- qf:function(a){return cust(a)?null:{en:'How interested would you be in banking-type services from your technology provider, such as instant deposits and business financing?',ar:'ما مدى اهتمامك بخدمات شبيهة بالخدمات المصرفية من مزود التقنية لديك، مثل الإيداع الفوري وتمويل الأعمال؟'}},
+ q:{en:'How interested would you be in banking-type services from Foodics, such as instant deposits and business financing?',ar:'هل يهمك الحصول على خدمات مالية عبر فودكس (مثل الإيداع الفوري للمبيعات وتمويل الأعمال)؟'},
+ qf:function(a){return cust(a)?null:{en:'How interested would you be in banking-type services from your technology provider, such as instant deposits and business financing?',ar:'هل يهمك الحصول على خدمات مالية عبر مزود التقنية لديك (مثل الإيداع الفوري للمبيعات وتمويل الأعمال)؟'}},
  lo:{en:'Not interested',ar:'غير مهتم'},hi:{en:'Very interested',ar:'مهتم جداً'}},
 {id:'otherProvider',sec:'s2',type:'single',
  q:{en:'Do you also use another provider?',ar:'هل تستخدم مزوداً آخر إلى جانب فودكس؟'},
@@ -522,7 +522,7 @@ var QUESTIONS = [
 {id:'foodicsPayWhy',sec:'s2',type:'multi',max:20,hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  show:function(a){return cust(a)&&Array.isArray(a.products)&&a.products.length>0&&a.products.indexOf('pay')<0&&a.products.indexOf('notsure')<0},
  q:{en:"What's holding you back from Foodics Pay?",ar:'ما الذي يمنعك من استخدام Foodics Pay؟'},
- opts:[O('unconvinced',"I'm not convinced it's worth it",'لست مقتنعاً بجدواه'),O('unaware',"I don't know about it",'لا أعرف عنه'),O('benefits',"I don't know what the benefits are",'لا أعرف ما فوائده'),O('loan','I have a loan with a bank or another entity','لدي قرض مع بنك أو جهة أخرى'),O('other','Other','أخرى',{other:true})]},
+ opts:[O('unconvinced',"I'm not convinced it's worth it",'لست مقتنعاً بجدواه'),O('unaware',"I don't know about it",'لم أسمع بهذه الخدمة من قبل'),O('benefits',"I don't know what the benefits are",'مميزات الخدمة غير واضحة'),O('loan','I have a loan with a bank or another entity','ملتزم بأجهزة بنكية مرتبطة بتمويل قائم'),O('other','Other','أخرى',{other:true})]},
 {id:'workshop',sec:'s2',type:'scale',smin:1,smax:10,
  q:{en:'How likely are you to join workshops with the Foodics team to test upcoming products and share ideas?',ar:'ما احتمال مشاركتك في ورش عمل مع فريق فودكس لتجربة المنتجات القادمة وتقديم أفكارك؟'},
  qf:function(a){return cust(a)?null:{en:'How likely are you to join workshops to test upcoming restaurant-tech products and share your ideas?',ar:'ما احتمال مشاركتك في ورش عمل لتجربة منتجات تقنية جديدة للمطاعم وتقديم أفكارك؟'}},
@@ -530,38 +530,38 @@ var QUESTIONS = [
 
 /* Challenges and needs */
 {id:'techSat',sec:'s3',type:'scale',smin:1,smax:5,labels:LAB5,
- q:{en:'How satisfied are you with your current technology?',ar:'ما مدى رضاك عن التقنيات التي تستخدمها حالياً؟'},
- qf:function(a){return cust(a)?{en:'How satisfied are you with your current technology, including Foodics?',ar:'ما مدى رضاك عن التقنيات التي تستخدمها حالياً، بما فيها فودكس؟'}:null}},
+ q:{en:'How satisfied are you with your current technology?',ar:'ما مدى رضاك عن الحلول والأنظمة التقنية التي تعتمد عليها حالياً؟'},
+ qf:function(a){return cust(a)?{en:'How satisfied are you with your current technology, including Foodics?',ar:'ما مدى رضاك عن الحلول والأنظمة التقنية التي تعتمد عليها حالياً، بما فيها فودكس؟'}:null}},
 {id:'challenges',sec:'s3',type:'multi',max:20,
  q:{en:'What are your most pressing challenges in running your business?',ar:'ما أبرز التحديات التي تواجهك في إدارة نشاطك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('devices',"My devices don't connect to each other",'أجهزتي غير مترابطة'),O('manual','Too much manual work','عمل يدوي كثير'),O('costs','Rising operating costs','ارتفاع التكاليف التشغيلية'),O('loan','Difficulty getting a loan','صعوبة الحصول على تمويل'),O('accounting','Accounting problems','مشاكل المحاسبة'),O('inventory','Inventory problems','مشاكل المخزون'),O('other','Other','أخرى',{other:true})]},
+ opts:[O('devices',"My devices don't connect to each other",'غياب التكامل والربط بين الأجهزة والأنظمة'),O('manual','Too much manual work','كثرة العمليات والإجراءات اليدوية'),O('costs','Rising operating costs','ارتفاع التكاليف التشغيلية'),O('loan','Difficulty getting a loan','صعوبة الحصول على تمويل'),O('accounting','Accounting problems','صعوبات الإدارة المالية والتسويات المحاسبية'),O('inventory','Inventory problems','صعوبات ضبط المخزون وإدارة الهدر'),O('other','Other','أخرى',{other:true})]},
 {id:'manualWhere',sec:'s3',type:'multi',max:20,
  show:function(a){return Array.isArray(a.challenges)&&a.challenges.indexOf('manual')>=0},
  q:{en:'Where does the manual work hurt most?',ar:'أين يشكّل العمل اليدوي أكبر عبء؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
  opts:[O('menu','Menu and price updates','تحديث القائمة والأسعار'),O('recon','Reconciling orders','مطابقة الطلبات'),O('inventory','Inventory','المخزون'),O('payments','Payments and settlement','المدفوعات والتسويات'),O('accounting','Accounting','المحاسبة'),O('reporting','Reporting','التقارير'),O('scheduling','Staff scheduling','جدولة الموظفين')]},
 {id:'unmet',sec:'s3',type:'multi',max:20,
- q:{en:'What do you need today that neither Foodics nor anyone else has solved for you?',ar:'ما الذي تحتاجه اليوم ولم تستطع فودكس أو أي جهة أخرى حله لك؟'},
- qf:function(a){return cust(a)?null:{en:'What do you need today that no provider has solved for you?',ar:'ما الذي تحتاجه اليوم ولم يستطع أي مزود حله لك؟'}},
+ q:{en:'What do you need today that neither Foodics nor anyone else has solved for you?',ar:'ما أبرز الاحتياجات التي لم تجد لها حلاً مناسباً حتى الآن في فودكس أو غيرها؟'},
+ qf:function(a){return cust(a)?null:{en:'What do you need today that no provider has solved for you?',ar:'ما أبرز الاحتياجات التي لم تجد لها حلاً مناسباً حتى الآن لدى أي مزود؟'}},
  hint:{en:"Can't think of one? Pick from these ideas. Select all that apply.",ar:'لا يخطر ببالك شيء؟ اختر من هذه الأفكار. اختر كل ما ينطبق.'},
- opts:[O('profit','Knowing my real profit per branch','معرفة ربحي الحقيقي لكل فرع'),O('waste','Cutting food waste and stock-outs','تقليل الهدر ونفاد المخزون'),O('staff','Finding and keeping good staff','إيجاد الموظفين الجيدين والاحتفاظ بهم'),O('guests','Bringing guests back more often','إعادة الضيوف بشكل أكبر'),O('commissions','Cutting delivery-app commissions','تقليل عمولات تطبيقات التوصيل'),O('cash','Cash flow and financing','التدفق النقدي والتمويل'),O('compliance','Keeping up with regulation and e-invoicing','مواكبة اللوائح والفوترة الإلكترونية'),O('none',"Nothing, I'm covered",'لا شيء، احتياجاتي مغطاة',{exclusive:true}),O('other','Other','أخرى',{other:true})]},
+ opts:[O('profit','Knowing my real profit per branch','معرفة ربحي الحقيقي لكل فرع'),O('waste','Cutting food waste and stock-outs','الحد من هدر المواد وتفادي انقطاع المخزون'),O('staff','Finding and keeping good staff','توظيف كفاءات مميزة والمحافظة عليها'),O('guests','Bringing guests back more often','زيادة ولاء العملاء وتكرار زياراتهم'),O('commissions','Cutting delivery-app commissions','تقليل عمولات تطبيقات التوصيل'),O('cash','Cash flow and financing','التدفق النقدي والتمويل'),O('compliance','Keeping up with regulation and e-invoicing','مواكبة اللوائح والفوترة الإلكترونية'),O('none',"Nothing, I'm covered",'لا شيء، احتياجاتي مغطاة',{exclusive:true}),O('other','Other','أخرى',{other:true})]},
 {id:'guestTool',sec:'s3',type:'multi',max:9,
- q:{en:'What do you use today to keep guests coming back?',ar:'ما الذي تستخدمه حالياً لإبقاء الضيوف يعودون إليك؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
- opts:[O('loyalty','A loyalty program in my system','برنامج ولاء ضمن نظامي'),O('messages','WhatsApp, Instagram or manual messages','واتساب أو إنستغرام أو رسائل يدوية'),O('sheet','A spreadsheet or notes','جدول بيانات أو ملاحظات'),O('other','Other','أخرى',{other:true}),O('none','Nothing yet','لا شيء حتى الآن',{exclusive:true})]},
+ q:{en:'What do you use today to keep guests coming back?',ar:'ما الحلول التي تعتمد عليها لتشجيع ضيوفك على تكرار الزيارة؟'},hint:{en:'Select all that apply',ar:'اختر كل ما ينطبق'},
+ opts:[O('loyalty','A loyalty program in my system','برنامج ولاء ضمن نظامي'),O('messages','WhatsApp, Instagram or manual messages','واتساب أو إنستغرام أو رسائل يدوية'),O('sheet','A spreadsheet or notes','ملفات إكسل أو تسجيل يدوي (Excel)‎'),O('other','Other','أخرى',{other:true}),O('none','Nothing yet','لا شيء حتى الآن',{exclusive:true})]},
 {id:'guestSat',sec:'s3',type:'scale',smin:1,smax:5,show:function(a){return Array.isArray(a.guestTool)&&a.guestTool.some(function(x){return x!=='none'})},
- q:{en:'How satisfied are you with how you engage your guests?',ar:'ما مدى رضاك عن طريقة تواصلك مع ضيوفك؟'},
+ q:{en:'How satisfied are you with how you engage your guests?',ar:'ما مدى رضاك عن قنوات وآليات التواصل والتفاعل مع ضيوفك وعملائك؟'},
  lo:{en:'Not satisfied',ar:'غير راضٍ'},hi:{en:'Very satisfied',ar:'راضٍ جداً'}},
 
 /* Last page */
 {id:'contact',sec:'s5',type:'contact',
- q:{en:'Stay in touch',ar:'ابقَ على تواصل'},hint:{en:'Everything here is optional.',ar:'كل ما هنا اختياري.'}}
+ q:{en:'Stay in touch',ar:'ابقَ على تواصل'},hint:{en:'Everything here is optional.',ar:'جميع الخيارات التالية اختيارية.'}}
 ];
 /* Every question must be answered. Only the last contact page stays voluntary (personal details). */
 QUESTIONS.forEach(function(q){ if(q.type!=='contact') q.req = true; });
 QUESTIONS.forEach(function(q){ if(q.id==='otherCountries') q.req = false; });   /* optional */
 var CONTACT_PREFS = [
  O('interview','Invite me to a short interview','ادعوني إلى مقابلة قصيرة'),
- O('testing','Invite me to test new products','ادعوني لتجربة المنتجات الجديدة'),
- O('contact','Have Foodics contact me','أرغب بأن يتواصل معي فريق فودكس'),
+ O('testing','Invite me to test new products','يسعدني تجربة المنتجات والمزايا الجديدة قبل إطلاقها'),
+ O('contact','Have Foodics contact me','أرغب في أن يتواصل معي فريق فودكس'),
  O('report',"Send me the report when it's published",'أرسلوا لي التقرير عند نشره'),
  O('none',"Please don't contact me",'لا أرغب في أن يتم التواصل معي')
 ];
@@ -710,6 +710,7 @@ function optHtml(o,i,checked,role,extra){
     '<span class="lbl">'+(o.flag?flagHtml(o.flag):'')+esc(L(o.l))+(o.sub?'<small>'+esc(L(o.sub))+'</small>':'')+'</span>'+ICON_TICK+'</button>';
 }
 
+function unhappyOpt(p){ return (p.v==='pos' && state.lang==='ar') ? Object.assign({},p,{l:{en:p.l.en,ar:'نظام الكاشير'},sub:null}) : p; }
 function renderQ(){
   var q = curQ(), a = state.a, html = '';
   var V = visibleQs(), idx = V.indexOf(q);
@@ -756,7 +757,7 @@ function renderQ(){
     html += '<div class="irs">';
     prods.forEach(function(p,i){
       var on = Object.prototype.hasOwnProperty.call(picks,p.v);
-      html += '<div class="ir">'+optHtml(p,i,on,'checkbox',' data-pick="1"');
+      html += '<div class="ir">'+optHtml(unhappyOpt(p),i,on,'checkbox',' data-pick="1"');
       if(on){
         html += '<div class="reasons" role="radiogroup">';
         REASONS.forEach(function(r){ html += '<button type="button" class="rs" role="radio" aria-checked="'+(picks[p.v]===r.v)+'" data-pid="'+esc(p.v)+'" data-r="'+esc(r.v)+'">'+esc(L(r.l))+'</button>'; });
@@ -764,7 +765,7 @@ function renderQ(){
       }
       html += '</div>';
     });
-    html += optHtml({v:'__all',l:{en:"I'm satisfied with all my products",ar:'أنا راضٍ عن جميع منتجاتي'}},prods.length,!!a.unhappy_all,'checkbox',' data-all="1"');
+    html += optHtml({v:'__all',l:{en:"I'm satisfied with all my products",ar:'راضٍ عن جميع منتجات وخدمات فودكس'}},prods.length,!!a.unhappy_all,'checkbox',' data-all="1"');
     html += '</div>';
     html += '<textarea class="inp" id="note" maxlength="400" rows="2" style="margin-top:14px;min-height:80px" placeholder="'+esc(u('noteOpt'))+'">'+esc(a.unhappy_note||'')+'</textarea>';
   }
@@ -806,7 +807,8 @@ function chrome(){
   var V = visibleQs(), idx = V.indexOf(q);
   bar.style.width = Math.max(3, Math.round((idx/V.length)*100)) + '%';
   var secs = 0; for(var i=idx;i<V.length;i++) secs += WEIGHT[V[i].type]||8;
-  tl.textContent = secs>75 ? u('minLeft',{n:Math.round(secs/60)||1}) : u('lessMin');
+  var mins = Math.round(secs/60)||1;
+  tl.textContent = secs>75 ? (mins===1 && UI[state.lang].minOne ? u('minOne') : (mins===2 && UI[state.lang].minTwo ? u('minTwo') : u('minLeft',{n:mins}))) : u('lessMin');
   updateDock();
   if(state.lastSec!==null && state.lastSec!==q.sec){ var chip=$('#chip'); if(chip) chip.classList.add('flash'); }
   state.lastSec = q.sec;

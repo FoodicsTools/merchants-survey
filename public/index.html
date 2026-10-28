@@ -253,7 +253,7 @@ details.dbg pre{max-height:240px;overflow:auto;background:rgba(0,0,0,.25);paddin
 var CFG = Object.assign({SUBMIT_URL:'',TURNSTILE_SITE_KEY:''}, window.SURVEY_CONFIG||{});
 var CONFIGURED = !!CFG.SUBMIT_URL;
 var STORE_KEY = 'foodics_mi_survey_v12';
-var VERSION = 'v12';
+var VERSION = 'v13';
 
 /* ---------- Helpers ---------- */
 var $ = function(s){return document.querySelector(s)};
@@ -396,11 +396,9 @@ var QUESTIONS = [
 {id:'isCustomer',sec:'s1',type:'single',req:true,
  q:{en:'Are you a Foodics customer?',ar:'هل أنت عميل لدى فودكس؟'},
  opts:[O('yes','Yes, I use Foodics','نعم، أستخدم فودكس'),O('former','I stopped using Foodics (not a Foodics merchant anymore)','توقفت عن استخدام فودكس (عميل سابق)'),O('no',"No, I've never used Foodics",'لا، لم أستخدم فودكس من قبل')]},
-{id:'f5Id',sec:'s1',type:'textopt',show:cust,maxlen:40,
- q:{en:'What is your F5 ID?',ar:'ما هو معرّف F5 الخاص بك؟'},
- hint:{en:'(We may already know some details about your business through your F5 ID. We still ask the next questions so we can double-check them and make sure we have the full picture.)',ar:'(قد تتوفر لدينا بعض المعلومات عن نشاطك عبر معرّف F5، نطرح هذه الأسئلة لمطابقة بياناتك وفهم احتياجات نشاطك بدقة.)'},
- ph:{en:'F5 ID',ar:'معرّف F5'},skip:{en:"I don't know it",ar:'لا أعرفه'}},
-{id:'position',sec:'s1',type:'single',req:true,
+{id:'businessName',sec:'s1',type:'textopt',maxlen:80,
+ q:{en:'What is the name of your restaurant or café?',ar:'ما اسم مطعمك أو مقهاك؟'},
+ ph:{en:'Business name',ar:'اسم المنشأة'}},{id:'position',sec:'s1',type:'single',req:true,
  q:{en:"What's your position?",ar:'ما هو منصبك؟'},
  opts:[O('owner','Owner / founder','مالك / مؤسس'),O('gm','General manager / operations','مدير عام / عمليات'),O('finance','Finance','المالية'),O('it','IT / technology','التقنية'),O('marketing','Marketing','التسويق'),O('other','Other','أخرى',{other:true})]},
 {id:'entityType',sec:'s1',type:'multi',req:true,max:9,
@@ -570,9 +568,34 @@ var WEIGHT = {single:6,scale:6,multi:10,items:16,text:24,textopt:10,contact:22};
 /* ---------- State ---------- */
 var state = {
   lang: 'ar',   /* the survey always opens in Arabic; the language button switches to English */
-  screen:'intro', cur:null, a:{}, contact:{name:'',entity:'',email:'',phone:'',account:'',f5:'',prefs:[]},
+  screen:'intro', cur:null, a:{}, contact:{name:'',email:'',phone:'',prefs:[]},
   startedAt:Date.now(), lastSec:null, halfShown:false, sending:false, submitError:false, submittedPrefs:[]
 };
+/* ---------- Progress: report which question a merchant reached (question id and number only, never answers) ---------- */
+function newSid(){
+  try{ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); }catch(e){}
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){ var r=Math.random()*16|0, v=c==='x'?r:(r&3|8); return v.toString(16); });
+}
+state.sid = newSid(); state._pinged = {};
+function ping(qid, idx, total){
+  try{
+    if(!CONFIGURED || state._pinged[qid]) return;
+    state._pinged[qid] = 1;
+    var a = state.a, src='';
+    try{ src = (new URLSearchParams(location.search).get('src')||'').trim().toLowerCase().slice(0,60); }catch(e){}
+    var body = JSON.stringify({
+      sid: state.sid, survey_version: VERSION, language: state.lang, q_id: qid, q_index: idx, q_total: total,
+      grp: (a.isCustomer==='yes'||a.isCustomer==='former'||a.isCustomer==='no') ? a.isCustomer : null,
+      country: curCountry() || null, source: src || null,
+      seconds: Math.max(0, Math.min(86400, Math.round((Date.now()-state.startedAt)/1000)))
+    });
+    fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:body,keepalive:true}).catch(function(){});
+  }catch(e){}
+}
+function trackProgress(){
+  if(state.screen==='intro') ping('intro',0,0);
+  else if(state.screen==='q'){ var q=curQ(), V=visibleQs(); if(q) ping(q.id, V.indexOf(q)+1, V.length); }
+}
 var advTimer = null;
 var hadSaved = false;
 
@@ -580,13 +603,13 @@ function save(){
   try{
     if(state.screen==='done') { localStorage.removeItem(STORE_KEY); return; }
     if(state.screen!=='q') return;
-    localStorage.setItem(STORE_KEY, JSON.stringify({lang:state.lang,cur:state.cur,a:state.a,contact:state.contact,startedAt:state.startedAt,halfShown:state.halfShown}));
+    localStorage.setItem(STORE_KEY, JSON.stringify({lang:state.lang,cur:state.cur,a:state.a,contact:state.contact,startedAt:state.startedAt,halfShown:state.halfShown,sid:state.sid}));
   }catch(e){}
 }
 function load(){
   try{
     var s = JSON.parse(localStorage.getItem(STORE_KEY)||'null');
-    if(s && s.cur && s.a){ state._savedLang=s.lang; state.a=s.a; state.contact=s.contact||state.contact; state.startedAt=s.startedAt||Date.now(); state.halfShown=!!s.halfShown; state._resume=s.cur; hadSaved=true; }
+    if(s && s.cur && s.a){ state._savedLang=s.lang; state.a=s.a; state.contact=s.contact||state.contact; state.startedAt=s.startedAt||Date.now(); state.halfShown=!!s.halfShown; state._resume=s.cur; if(s.sid) state.sid=s.sid; hadSaved=true; }
   }catch(e){}
 }
 
@@ -660,6 +683,7 @@ function render(dir){
   else renderQ();
   chrome();
   save();
+  trackProgress();
 }
 
 function renderIntro(){
@@ -750,7 +774,7 @@ function renderQ(){
     var tv = a[q.id]==='__skip' ? '' : (a[q.id]||'');
     var tin = '<input class="inp" id="ti" type="text" maxlength="'+(q.maxlen||60)+'"'+(q.numeric?' dir="auto"':'')+' autocomplete="off" placeholder="'+esc(L(q.ph)||u('typeHere'))+'" value="'+esc(tv)+'">';
     html += q.unit ? '<div style="display:flex;align-items:center;gap:12px">'+tin.replace('class="inp"','class="inp" style="flex:1"')+'<strong style="font-size:1.05rem;letter-spacing:.04em">'+esc(L(q.unit))+'</strong></div>' : tin;
-    html += '<div class="opts" style="margin-top:14px" role="group">'+optHtml({v:'__skip',l:q.skip},0,a[q.id]==='__skip','checkbox',' data-skip="1"')+'</div>';
+    if(q.skip) html += '<div class="opts" style="margin-top:14px" role="group">'+optHtml({v:'__skip',l:q.skip},0,a[q.id]==='__skip','checkbox',' data-skip="1"')+'</div>';
   }
   else if(q.type==='items'){
     var picks = a.unhappy||{}, prods = PRODUCTS.filter(function(p){return haveProducts(a).indexOf(p.v)>=0});
@@ -778,7 +802,6 @@ function renderQ(){
     if(c.prefs.indexOf('none')<0){
       html += '<div class="cf" style="margin-top:22px">'+
         field('name',ar?'الاسم الكامل':'Full name','text',c.name,'name')+
-        field('entity',ar?'اسم المنشأة':'Business name','text',c.entity,'organization')+
         field('email',ar?'البريد الإلكتروني':'Email','email',c.email,'email')+
         field('phone',ar?'رقم الجوال':'Phone','tel',c.phone,'tel')+
         '</div>';
@@ -844,7 +867,7 @@ function startSurvey(fromResume){
   var V = visibleQs();
   if(fromResume && state._savedLang) state.lang = state._savedLang;   /* resuming brings back the language they were using */
   if(fromResume && state._resume && V.some(function(q){return q.id===state._resume})) state.cur = state._resume;
-  else { state.cur = V[0].id; if(!fromResume){ state.a={}; state.contact={name:'',entity:'',email:'',phone:'',account:'',f5:'',prefs:[]}; state.startedAt=Date.now(); state.halfShown=false; } }
+  else { state.cur = V[0].id; if(!fromResume){ state.a={}; state.contact={name:'',email:'',phone:'',prefs:[]}; state.startedAt=Date.now(); state.halfShown=false; } }
   state.screen='q'; state.lastSec=null; state.submitError=false;
   render('fwd'); focusStage();
 }
@@ -1014,12 +1037,12 @@ function buildPayload(){
   var V = visibleQs(), keep = {}, a = state.a, out = {};
   V.forEach(function(q){ keep[q.id]=1; keep[q.id+'_other']=1; keep[q.id+'_exact']=1; if(q.type==='items'){ keep.unhappy=1; keep.unhappy_all=1; keep.unhappy_note=1; } });
   Object.keys(a).forEach(function(k){ if(keep[k] && k!=='contact'){ var v=a[k]; if(v!==''&&v!=null) out[k]=v; } });
+  out._sid = state.sid;   /* links the answers to the progress reports */
   out._shown = V.map(function(q){ return q.id; }).filter(function(id){ return id!=='contact'; });   /* which questions this merchant was shown, so skips can be seen */
   var c = state.contact;
   var contact = {};
   if(c.prefs.indexOf('none')<0){
     if(c.name.trim()) contact.name=c.name.trim();
-    if(c.entity.trim()) contact.entity=c.entity.trim();
     if(c.email.trim()) contact.email=c.email.trim();
     if(c.phone.trim()) contact.phone=c.phone.trim();
   }

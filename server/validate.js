@@ -39,4 +39,27 @@ function validateResponse(r) {
   };
 }
 
-module.exports = { validateResponse };
+// One "the merchant reached question X" report. It carries no answers, only the question id and position,
+// so we can see where people stop. Sent by the browser without the human check, so it is strictly shape-checked.
+const GROUPS = ['yes', 'former', 'no'];
+function validateProgress(r) {
+  if (!isPlainObject(r)) return { error: 'body must be an object' };
+  if (typeof r.sid !== 'string' || !/^[A-Za-z0-9-]{8,64}$/.test(r.sid)) return { error: 'bad sid' };
+  if (typeof r.survey_version !== 'string' || !/^v\d{1,3}$/.test(r.survey_version)) return { error: 'bad survey_version' };
+  if (r.language !== 'en' && r.language !== 'ar') return { error: 'language must be en or ar' };
+  if (typeof r.q_id !== 'string' || !/^[A-Za-z0-9_]{1,40}$/.test(r.q_id)) return { error: 'bad q_id' };
+  if (!Number.isInteger(r.q_index) || r.q_index < 0 || r.q_index > 200) return { error: 'bad q_index' };
+  if (!Number.isInteger(r.q_total) || r.q_total < 0 || r.q_total > 200) return { error: 'bad q_total' };
+  if (r.grp != null && !GROUPS.includes(r.grp)) return { error: 'bad grp' };
+  if (r.country != null && !(typeof r.country === 'string' && /^[a-z]{2,20}$/.test(r.country))) return { error: 'bad country' };
+  if (r.source != null && !(typeof r.source === 'string' && r.source.length <= 60)) return { error: 'source too long' };
+  if (r.seconds != null && !(Number.isInteger(r.seconds) && r.seconds >= 0 && r.seconds <= 86400)) return { error: 'bad seconds' };
+  return {
+    value: {
+      sid: r.sid, survey_version: r.survey_version, language: r.language,
+      grp: r.grp ?? null, country: r.country ?? null, source: r.source || null,
+      q_id: r.q_id, q_index: r.q_index, q_total: r.q_total, seconds: r.seconds ?? null,
+    },
+  };
+}
+module.exports = { validateResponse, validateProgress };

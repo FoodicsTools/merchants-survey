@@ -9,7 +9,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { Pool } = require('pg');
-const { validateResponse } = require('./validate');
+const { validateResponse, validateProgress } = require('./validate');
 
 const PORT = Number(process.env.PORT || 8080);
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -19,6 +19,7 @@ const TURNSTILE_DISABLED = process.env.TURNSTILE_DISABLED === '1'; // local deve
 const PUBLIC_HOSTNAME = process.env.PUBLIC_HOSTNAME || ''; // when set, Turnstile tokens must be issued for it
 const RATE_LIMIT = Number(process.env.SUBMIT_RATE_LIMIT || 10); // submissions per IP per window
 const RATE_WINDOW_MS = 10 * 60 * 1000;
+const PROGRESS_LIMIT = Number(process.env.PROGRESS_RATE_LIMIT || 2000); // progress reports per IP per window (many phones can share one address)
 const MAX_BODY_BYTES = 64 * 1024;
 
 if (!TURNSTILE_DISABLED && (!TURNSTILE_SITE_KEY || !TURNSTILE_SECRET_KEY)) {
@@ -96,7 +97,19 @@ function rateLimited(ip) {
   h.n += 1;
   return h.n > RATE_LIMIT;
 }
-setInterval(() => { const now = Date.now(); for (const [k, v] of hits) if (v.reset <= now) hits.delete(k); }, 60_000).unref();
+const progressHits = new Map();
+function progressLimited(ip) {
+  const now = Date.now();
+  const h = progressHits.get(ip);
+  if (!h || h.reset <= now) { progressHits.set(ip, { n: 1, reset: now + RATE_WINDOW_MS }); return false; }
+  h.n += 1;
+  return h.n > PROGRESS_LIMIT;
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of hits) if (v.reset <= now) hits.delete(k);
+  for (const [k, v] of progressHits) if (v.reset <= now) progressHits.delete(k);
+}, 60_000).unref();
 
 // ---------------------------------------------------------------- Turnstile
 async function verifyTurnstile(token, ip) {
@@ -157,12 +170,34 @@ async function submit(req, res) {
   return json(res, 201, { ok: true });
 }
 
+// "The merchant reached question X": no answers, no human check, its own generous rate limit.
+async function progress(req, res) {
+  const ip = req.headers['cf-connecting-ip'] || req.socket.remoteAddress || '';
+  if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) return json(res, 415, { error: 'json only' });
+  if (progressLimited(ip)) return json(res, 429, { error: 'too many reports' });
+  let body;
+  try { body = JSON.parse(await readBody(req)); } catch (e) { return json(res, e.status || 400, { error: 'bad body' }); }
+  const v = validateProgress(body);
+  if (v.error) return json(res, 400, { error: v.error });
+  const r = v.value;
+  await pool.query(
+    `insert into public.survey_progress (sid, survey_version, language, grp, country, source, q_id, q_index, q_total, seconds)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+    [r.sid, r.survey_version, r.language, r.grp, r.country, r.source, r.q_id, r.q_index, r.q_total, r.seconds],
+  );
+  return send(res, 204, '', 'application/json', { 'Cache-Control': 'no-store' });
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
     if (url.pathname === '/api/responses') {
       if (req.method !== 'POST') return json(res, 405, { error: 'method not allowed' });
       return await submit(req, res);
+    }
+    if (url.pathname === '/api/progress') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'method not allowed' });
+      return await progress(req, res);
     }
     if (url.pathname === '/healthz') {
       await pool.query('select 1');
